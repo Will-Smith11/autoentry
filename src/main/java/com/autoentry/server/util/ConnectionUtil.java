@@ -13,7 +13,7 @@ public class ConnectionUtil
 {
 	private static final String jsonPath = "C:\\Users\\Will\\git\\googleKey\\nodal-plexus-325621-b78c1f8fafde.json";
 
-	static void authImplicit() throws Exception
+	public static void authImplicit() throws Exception
 	{
 		// If you don't specify credentials when constructing the client, the client library will
 		// look for credentials via the environment variable GOOGLE_APPLICATION_CREDENTIALS.
