@@ -61,7 +61,6 @@ public class BoundingBoxDocument implements BaseDocument
 	public void setWidth(int width)
 	{
 		// TODO Auto-generated method stub
-
 	}
 
 }

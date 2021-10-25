@@ -39,11 +39,20 @@ import com.google.cloud.vision.v1.TextAnnotation;
 import com.google.cloud.vision.v1.Word;
 import com.google.protobuf.util.JsonFormat;
 
+import io.reactivex.rxjava3.core.Completable;
+
 @Service
 public class PdfDocumentOcrServiceImpl implements DocumentOcrService
 {
 	@Autowired
 	private BaseDocument doc;
+
+	@Override
+	public Completable run() throws Exception
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	public void runOcr() throws Exception
 	{
@@ -184,5 +193,4 @@ public class PdfDocumentOcrServiceImpl implements DocumentOcrService
 			System.out.println("No MATCH");
 		}
 	}
-
 }
