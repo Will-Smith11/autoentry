@@ -1,14 +1,14 @@
 package com.autoentry.server.interfaces;
 
+import java.io.IOException;
 import java.util.List;
 
+import com.autoentry.server.beans.Document;
 import com.autoentry.server.entities.BoundingBox;
 import com.google.cloud.vision.v1.Block;
 import com.google.cloud.vision.v1.Paragraph;
 import com.google.cloud.vision.v1.Symbol;
 import com.google.cloud.vision.v1.Word;
-
-import io.reactivex.rxjava3.core.Completable;
 
 public interface BaseDocument
 {
@@ -28,9 +28,9 @@ public interface BaseDocument
 
 	void setWidth(int width);
 
-	Completable genMeta();
+	void genMeta() throws IOException;
 
-	Completable processMeta();
+	void processMeta();
 
 	float getWidth();
 
@@ -59,5 +59,7 @@ public interface BaseDocument
 	void setWords(List<Word> words);
 
 	void setSymbols(List<Symbol> symbols);
+
+	Document getBean();
 
 }

@@ -19,11 +19,11 @@ public class PdfParserServiceImpl implements PdfParserService
 	public List<Line> run(PDDocument doc) throws IOException
 	{
 		List<Line> results = new ArrayList<>();
-		for (int i = 0; i < doc.getNumberOfPages(); i++)
-		{
-			PageReaderListenerService reader = new PageReaderListenerServiceImpl(doc.getPage(i), i);
-			results.addAll(reader.getLines());
-		}
+		//		for (int i = 0; i < doc.getNumberOfPages(); i++)
+		//		{
+		PageReaderListenerService reader = new PageReaderListenerServiceImpl(doc.getPage(0), 0);
+		results.addAll(reader.getLines());
+		//		}
 		return results;
 	}
 

@@ -8,8 +8,8 @@ import com.autoentry.server.entities.Label;
 
 public class Document implements Serializable
 {
+
 	static final long serialVersionUID = 1L;
-	private Long id = 0L;
 	private String sourcePath;
 	private String resultPath;
 	private String projectId;
@@ -24,15 +24,30 @@ public class Document implements Serializable
 	private double EPS = 3.0;
 	private HashMap<Label, DetectedDocumentData> results = new HashMap<>();
 
-	public Document()
+	//	@Bean
+	//	public Document getDocument()
+	//	{
+	//		return new Document(sourcePathb, resultPathb, projectIdb, uploadBucketNameb, "gs://temp-upload-test/test",
+	//				"gs://temp-download-test/test", true);
+	//	}
+
+	public Document(String srcPath, String outPath, String projectId, String uploadBucketName, String gcsSrcPath, String gcsDestPath,
+			boolean isTemplate)
 	{
+		this.sourcePath = srcPath;
+		this.resultPath = outPath;
+		this.projectId = projectId;
+		this.uploadBucketName = uploadBucketName;
+		this.gcsSrcPath = gcsSrcPath;
+		this.gcsDestPath = gcsDestPath;
+		this.isTemplateCopy = isTemplate;
 	}
 
-	public Document(Long id, String sourcePath, String resultPath, String projectId, String uploadBucketName, String gcsSrcPath, String gcsDestPath,
+	public Document(String sourcePath, String resultPath, String projectId, String uploadBucketName, String gcsSrcPath, String gcsDestPath,
 			boolean isTemplateCopy, Integer height, Integer width, float heightDiv, float widthDiv)
 	{
 		super();
-		this.id = id;
+
 		this.sourcePath = sourcePath;
 		this.resultPath = resultPath;
 		this.projectId = projectId;
@@ -49,16 +64,6 @@ public class Document implements Serializable
 	public void addResult(Label label, DetectedDocumentData d)
 	{
 		this.results.put(label, d);
-	}
-
-	public Long getId()
-	{
-		return id;
-	}
-
-	public void setId(Long id)
-	{
-		this.id = id;
 	}
 
 	public String getSourcePath()
@@ -195,7 +200,6 @@ public class Document implements Serializable
 		result = prime * result + ((gcsSrcPath == null) ? 0 : gcsSrcPath.hashCode());
 		result = prime * result + ((height == null) ? 0 : height.hashCode());
 		result = prime * result + Float.floatToIntBits(heightDiv);
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + (isTemplateCopy ? 1231 : 1237);
 		result = prime * result + ((projectId == null) ? 0 : projectId.hashCode());
 		result = prime * result + ((resultPath == null) ? 0 : resultPath.hashCode());
@@ -238,13 +242,6 @@ public class Document implements Serializable
 		else if (!height.equals(other.height))
 			return false;
 		if (Float.floatToIntBits(heightDiv) != Float.floatToIntBits(other.heightDiv))
-			return false;
-		if (id == null)
-		{
-			if (other.id != null)
-				return false;
-		}
-		else if (!id.equals(other.id))
 			return false;
 		if (isTemplateCopy != other.isTemplateCopy)
 			return false;

@@ -1,6 +1,7 @@
 package com.autoentry.server.document.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,12 +26,11 @@ import com.google.cloud.vision.v1.Paragraph;
 import com.google.cloud.vision.v1.Symbol;
 import com.google.cloud.vision.v1.Word;
 
-import io.reactivex.rxjava3.core.Completable;
-
 @Component
 public class BoundingBoxDocument implements BaseDocument
 {
-	private Document doc;
+	@Autowired
+	Document doc;
 
 	@Autowired
 	PdfParserService parser;
@@ -49,11 +49,6 @@ public class BoundingBoxDocument implements BaseDocument
 	private List<Word> words = new ArrayList<>();
 	private List<Symbol> smybols = new ArrayList<>();
 	private List<BoundingBox> boundingBoxes = new ArrayList<>();
-
-	public BoundingBoxDocument(Document doc)
-	{
-		this.doc = doc;
-	}
 
 	@Override
 	public String getSourcePath()
@@ -115,77 +110,81 @@ public class BoundingBoxDocument implements BaseDocument
 	}
 
 	@Override
-	public Completable genMeta()
+	public void genMeta() throws IOException
 	{
-		return Completable.fromAction(() -> {
-
-			boundingBoxes = bbg.getBoundingBoxes(fixLines(parser.run(PDDocument.load(new File(getSourcePath()))), doc), doc.getEPS());
-			ocr.run();
-			//			fixLines(parser.run(PDDocument.load(new File(getSourcePath()))), doc)
-
-			//			BoundingBoxBuilder builder = new BoundingBoxBuilder();
-			//			builder.preLineBuild(lines, d.getEPS());
-			//			d.setBoundingBoxes(builder.getBoxes());
-		});
+		//		return Completable.fromAction(() -> {
+		PDDocument pddoc = PDDocument.load(new File(getSourcePath()));
+		System.out.println(getSourcePath());
+		pddoc.close();
+		boundingBoxes = bbg.getBoundingBoxes(fixLines(parser.run(pddoc), doc), doc.getEPS());
+		try
+		{
+			ocr.run().subscribe();
+		}
+		catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//		});
 	}
 
 	@Override
-	public Completable processMeta()
+	public void processMeta()
 	{
-		return Completable.fromAction(() -> {
 
-			List<RelatedBoundingBox<Block>> e = genRelation.getBlockBox();
+		List<RelatedBoundingBox<Block>> e = genRelation.getBlockBox();
 
-			int i = 0;
-			for (RelatedBoundingBox<Block> b : e)
+		int i = 0;
+		for (RelatedBoundingBox<Block> b : e)
+		{
+
+			String pageText = "";
+			for (Block block : b.getContent())
 			{
+				String blockText = "";
+				List<Paragraph> added = new ArrayList<>(block.getParagraphsList());
+				added.addAll(genRelation.getParaBox()
+						.stream()
+						.filter(v -> v.getBoundingBox().equals(b.getBoundingBox()))
+						.flatMap(v -> v.getContent().stream())
+						.collect(Collectors.toList()));
 
-				String pageText = "";
-				for (Block block : b.getContent())
+				for (Paragraph para : added)
 				{
-					String blockText = "";
-					List<Paragraph> added = new ArrayList<>(block.getParagraphsList());
-					added.addAll(genRelation.getParaBox()
+					String paraText = "";
+					List<Word> addedW = new ArrayList<>(para.getWordsList());
+					addedW.addAll(genRelation.getWordBox()
 							.stream()
 							.filter(v -> v.getBoundingBox().equals(b.getBoundingBox()))
 							.flatMap(v -> v.getContent().stream())
 							.collect(Collectors.toList()));
 
-					for (Paragraph para : added)
+					for (Word word : addedW)
 					{
-						String paraText = "";
-						List<Word> addedW = new ArrayList<>(para.getWordsList());
-						addedW.addAll(genRelation.getWordBox()
+						String wordText = "";
+
+						List<Symbol> addedS = new ArrayList<>(word.getSymbolsList());
+						addedS.addAll(genRelation.getSymbolBox()
 								.stream()
 								.filter(v -> v.getBoundingBox().equals(b.getBoundingBox()))
 								.flatMap(v -> v.getContent().stream())
 								.collect(Collectors.toList()));
 
-						for (Word word : addedW)
+						for (Symbol symbol : addedS)
 						{
-							String wordText = "";
-
-							List<Symbol> addedS = new ArrayList<>(word.getSymbolsList());
-							addedS.addAll(genRelation.getSymbolBox()
-									.stream()
-									.filter(v -> v.getBoundingBox().equals(b.getBoundingBox()))
-									.flatMap(v -> v.getContent().stream())
-									.collect(Collectors.toList()));
-
-							for (Symbol symbol : addedS)
-							{
-								wordText = wordText + symbol.getText();
-							}
-							paraText = String.format("%s %s", paraText, wordText);
+							wordText = wordText + symbol.getText();
 						}
-						blockText = blockText + paraText;
+						paraText = String.format("%s %s", paraText, wordText);
 					}
-					pageText = pageText + blockText;
+					blockText = blockText + paraText;
 				}
-				doc.addResult(new Label("test" + i, b.getBoundingBox()), new DetectedDocumentData(b.getBoundingBox(), pageText));
-				i++;
+				pageText = pageText + blockText;
 			}
-		});
+			doc.addResult(new Label("test" + i, b.getBoundingBox()), new DetectedDocumentData(b.getBoundingBox(), pageText));
+			i++;
+		}
+
 	}
 
 	@Override
@@ -274,5 +273,11 @@ public class BoundingBoxDocument implements BaseDocument
 	{
 		this.smybols = symbols;
 
+	}
+
+	@Override
+	public Document getBean()
+	{
+		return doc;
 	}
 }
