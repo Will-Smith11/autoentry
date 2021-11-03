@@ -3,11 +3,9 @@ package com.autoentry.server.service;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.pdfbox.pdmodel.PDDocument;
-
 import com.autoentry.server.entities.Line;
 
-public interface PdfParserService
+public interface PageReaderListenerService
 {
-	public List<Line> run(PDDocument doc) throws IOException;
+	public List<Line> getLines() throws IOException;
 }

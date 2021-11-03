@@ -28,22 +28,22 @@ public class RelitivePoint extends Point
 
 	public boolean relitiveLNX(RelitivePoint p)
 	{
-		return (this.x - p.x) >= -variance;
+		return (this.x - p.x) <= variance;
 	}
 
 	public boolean relitiveLNY(RelitivePoint p)
 	{
-		return (this.y - p.y) >= -variance;
+		return (this.y - p.y) <= variance;
 	}
 
 	public boolean relitiveGNX(RelitivePoint p)
 	{
-		return (this.x - p.x) >= variance;
+		return (this.x - p.x) >= -variance;
 	}
 
 	public boolean relitiveGNY(RelitivePoint p)
 	{
-		return (this.y - p.y) >= variance;
+		return (this.y - p.y) >= -variance;
 	}
 
 	public boolean relitiveEqualsY(RelitivePoint p)

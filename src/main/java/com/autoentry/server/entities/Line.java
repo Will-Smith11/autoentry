@@ -4,19 +4,20 @@ import org.opencv.core.Point;
 
 public class Line
 {
-	RelitivePoint a;
-	RelitivePoint b;
+	public RelitivePoint a;
+	public RelitivePoint b;
 	double bVal;
 	double slope;
 	final double variance = 0.3;
 	int page;
 
-	public Line(RelitivePoint a, RelitivePoint b)
+	public Line(RelitivePoint a, RelitivePoint b, int page)
 	{
 		this.a = a;
 		this.b = b;
 		this.slope = genSlope();
 		this.bVal = genBVal();
+		this.page = page;
 	}
 
 	private double genBVal()

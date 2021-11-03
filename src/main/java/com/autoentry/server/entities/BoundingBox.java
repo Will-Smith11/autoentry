@@ -10,7 +10,7 @@ import org.opencv.core.Point;
 public class BoundingBox
 {
 	Line[] vals = new Line[4];
-	RelitivePoint[] pointVals;
+	public RelitivePoint[] pointVals;
 	int index = 0;
 	private double EPS;
 
@@ -93,6 +93,8 @@ public class BoundingBox
 	@Override
 	public boolean equals(Object obj)
 	{
+		System.out.println("Bounding box equals");
+
 		if (obj instanceof BoundingBox)
 		{
 			BoundingBox b = (BoundingBox) obj;
@@ -100,6 +102,8 @@ public class BoundingBox
 			List<Point> objArray = Arrays.asList(b.pointVals); // TODO fix so that we account for eps of the points so that similar boxes don't overlap
 			Collections.sort(localArray, new BoundBoxComparator());
 			Collections.sort(objArray, new BoundBoxComparator());
+			System.out.println(localArray);
+			System.out.println(objArray);
 			return localArray.equals(objArray);
 
 		}

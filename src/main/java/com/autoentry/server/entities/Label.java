@@ -36,5 +36,4 @@ public class Label
 		}
 		return false;
 	}
-
 }

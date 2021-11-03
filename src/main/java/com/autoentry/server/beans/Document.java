@@ -1,10 +1,14 @@
 package com.autoentry.server.beans;
 
 import java.io.Serializable;
+import java.util.HashMap;
+
+import com.autoentry.server.entities.DetectedDocumentData;
+import com.autoentry.server.entities.Label;
 
 public class Document implements Serializable
 {
-	private static final long serialVersionUID = 1L;
+	static final long serialVersionUID = 1L;
 	private Long id = 0L;
 	private String sourcePath;
 	private String resultPath;
@@ -17,6 +21,8 @@ public class Document implements Serializable
 	private Integer width;
 	private float heightDiv;
 	private float widthDiv;
+	private double EPS = 3.0;
+	private HashMap<Label, DetectedDocumentData> results = new HashMap<>();
 
 	public Document()
 	{
@@ -38,6 +44,11 @@ public class Document implements Serializable
 		this.width = width;
 		this.heightDiv = heightDiv;
 		this.widthDiv = widthDiv;
+	}
+
+	public void addResult(Label label, DetectedDocumentData d)
+	{
+		this.results.put(label, d);
 	}
 
 	public Long getId()
@@ -165,6 +176,16 @@ public class Document implements Serializable
 		return serialVersionUID;
 	}
 
+	public HashMap<Label, DetectedDocumentData> getResults()
+	{
+		return results;
+	}
+
+	public void setResults(HashMap<Label, DetectedDocumentData> results)
+	{
+		this.results = results;
+	}
+
 	@Override
 	public int hashCode()
 	{
@@ -265,5 +286,15 @@ public class Document implements Serializable
 		if (Float.floatToIntBits(widthDiv) != Float.floatToIntBits(other.widthDiv))
 			return false;
 		return true;
+	}
+
+	public double getEPS()
+	{
+		return EPS;
+	}
+
+	public void setEPS(double ePS)
+	{
+		EPS = ePS;
 	}
 }

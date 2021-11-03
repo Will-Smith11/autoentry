@@ -50,8 +50,10 @@ public class PdfDocumentOcrServiceImpl implements DocumentOcrService
 	@Override
 	public Completable run() throws Exception
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return Completable.fromAction(() -> {
+			runOcr();
+			buildDoc();
+		});
 	}
 
 	public void runOcr() throws Exception
@@ -155,6 +157,7 @@ public class PdfDocumentOcrServiceImpl implements DocumentOcrService
 							//						BlockVertices v = new BlockVertices(poly.getVerticesList(), 1);
 							//						d.addBox(v);
 							//						String blockText = "";
+
 							//							doc.paragraphs = block.getParagraphsList();
 
 							for (Paragraph para : block.getParagraphsList())
