@@ -37,13 +37,6 @@ public class ServerApplication
 	BaseDocument bDoc;
 
 	@Bean
-	public Document doc()
-	{
-		return new Document(sourcePath, resultPath, projectId, uploadBucketName, "gs://temp-upload-test/test",
-				"gs://temp-download-test/test", true);
-	}
-
-	@Bean
 	public CommandLineRunner commandLineRunner(ApplicationContext ctx)
 	{
 		return args -> {

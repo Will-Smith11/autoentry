@@ -24,13 +24,6 @@ public class Document implements Serializable
 	private double EPS = 3.0;
 	private HashMap<Label, DetectedDocumentData> results = new HashMap<>();
 
-	//	@Bean
-	//	public Document getDocument()
-	//	{
-	//		return new Document(sourcePathb, resultPathb, projectIdb, uploadBucketNameb, "gs://temp-upload-test/test",
-	//				"gs://temp-download-test/test", true);
-	//	}
-
 	public Document(String srcPath, String outPath, String projectId, String uploadBucketName, String gcsSrcPath, String gcsDestPath,
 			boolean isTemplate)
 	{

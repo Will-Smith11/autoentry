@@ -5,13 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import com.autoentry.server.entities.Line;
-import com.autoentry.server.service.PageReaderListenerService;
 import com.autoentry.server.service.PdfParserService;
 
-@Service
+@Component
 public class PdfParserServiceImpl implements PdfParserService
 {
 
@@ -21,7 +20,7 @@ public class PdfParserServiceImpl implements PdfParserService
 		List<Line> results = new ArrayList<>();
 		//		for (int i = 0; i < doc.getNumberOfPages(); i++)
 		//		{
-		PageReaderListenerService reader = new PageReaderListenerServiceImpl(doc.getPage(0), 0);
+		PageReaderListenerServiceImpl reader = new PageReaderListenerServiceImpl(doc.getPage(0), 0);
 		results.addAll(reader.getLines());
 		//		}
 		return results;
