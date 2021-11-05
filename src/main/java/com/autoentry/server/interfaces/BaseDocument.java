@@ -1,10 +1,12 @@
 package com.autoentry.server.interfaces;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
-import com.autoentry.server.beans.Document;
 import com.autoentry.server.entities.BoundingBox;
+import com.autoentry.server.entities.DetectedDocumentData;
+import com.autoentry.server.entities.Label;
 import com.google.cloud.vision.v1.Block;
 import com.google.cloud.vision.v1.Paragraph;
 import com.google.cloud.vision.v1.Symbol;
@@ -60,6 +62,6 @@ public interface BaseDocument
 
 	void setSymbols(List<Symbol> symbols);
 
-	Document getBean();
+	HashMap<Label, DetectedDocumentData> getResults();
 
 }

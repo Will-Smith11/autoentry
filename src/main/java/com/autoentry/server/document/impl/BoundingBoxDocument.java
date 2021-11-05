@@ -1,9 +1,10 @@
 package com.autoentry.server.document.impl;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -21,10 +22,13 @@ import com.autoentry.server.service.BoundingBoxGenService;
 import com.autoentry.server.service.DocumentOcrService;
 import com.autoentry.server.service.PdfParserService;
 import com.autoentry.server.service.RelatedBoundingBoxGenService;
+import com.autoentry.server.util.PdfTransferUtil;
 import com.google.cloud.vision.v1.Block;
 import com.google.cloud.vision.v1.Paragraph;
 import com.google.cloud.vision.v1.Symbol;
 import com.google.cloud.vision.v1.Word;
+
+import io.reactivex.rxjava3.core.Completable;
 
 @Component
 public class BoundingBoxDocument implements BaseDocument
@@ -112,11 +116,19 @@ public class BoundingBoxDocument implements BaseDocument
 	@Override
 	public void genMeta() throws IOException
 	{
+		AtomicReference<PDDocument> pddoc = new AtomicReference<>();
 		//		return Completable.fromAction(() -> {
-		PDDocument pddoc = PDDocument.load(new File(getSourcePath()));
-		System.out.println(getSourcePath());
-		pddoc.close();
-		boundingBoxes = bbg.getBoundingBoxes(fixLines(parser.run(pddoc), doc), doc.getEPS());
+		Completable.fromAction(() -> pddoc.set(PdfTransferUtil.getDoc(doc.getProjectId(), doc.getUploadBucketName(), "test")))
+				.blockingSubscribe(() -> {
+					boundingBoxes = bbg.getBoundingBoxes(fixLines(parser.run(pddoc.get()), doc), doc.getEPS());
+					//				doc.getEPS());
+				});
+		//		PDDocument pddoc = PdfTransferUtil.getDoc(doc.getProjectId(), doc.getUploadBucketName(), "test");
+
+		//		System.out.println(pddoc.getNumberOfPages());
+		//		boundingBoxes = bbg.getBoundingBoxes(fixLines(parser.run(), doc),
+		//				doc.getEPS());
+
 		try
 		{
 			ocr.run().subscribe();
@@ -276,8 +288,8 @@ public class BoundingBoxDocument implements BaseDocument
 	}
 
 	@Override
-	public Document getBean()
+	public HashMap<Label, DetectedDocumentData> getResults()
 	{
-		return doc;
+		return doc.getResults();
 	}
 }

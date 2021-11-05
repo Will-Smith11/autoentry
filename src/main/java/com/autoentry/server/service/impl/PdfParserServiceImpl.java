@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
 import org.springframework.stereotype.Component;
 
 import com.autoentry.server.entities.Line;
@@ -20,8 +21,12 @@ public class PdfParserServiceImpl implements PdfParserService
 		List<Line> results = new ArrayList<>();
 		//		for (int i = 0; i < doc.getNumberOfPages(); i++)
 		//		{
-		PageReaderListenerServiceImpl reader = new PageReaderListenerServiceImpl(doc.getPage(0), 0);
+
+		PDPage p = doc.getPage(0);
+		System.out.println(p.getBleedBox().toString());
+		PageReaderListenerServiceImpl reader = new PageReaderListenerServiceImpl(p, 0);
 		results.addAll(reader.getLines());
+		doc.close();
 		//		}
 		return results;
 	}

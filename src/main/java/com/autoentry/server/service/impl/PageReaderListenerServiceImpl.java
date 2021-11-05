@@ -9,13 +9,11 @@ import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImage;
-import org.springframework.stereotype.Service;
 
 import com.autoentry.server.entities.Line;
 import com.autoentry.server.entities.RelitivePoint;
 import com.autoentry.server.service.PageReaderListenerService;
 
-@Service
 public class PageReaderListenerServiceImpl extends PDFGraphicsStreamEngine implements PageReaderListenerService
 {
 

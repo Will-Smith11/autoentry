@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
@@ -37,5 +39,21 @@ public class PdfTransferUtil
 						+ bucketName
 						+ " to "
 						+ destFilePath);
+	}
+
+	public static PDDocument getDoc(String projectId, String bucketName, String objectName)
+	{
+		try
+		{
+			Storage storage = StorageOptions.newBuilder().setProjectId(projectId).build().getService();
+			byte[] pdfBytes = storage.readAllBytes(BlobId.of(bucketName, objectName));
+			return PDDocument.load(pdfBytes);
+		}
+		catch (Exception e)
+		{
+			System.out.println(e.getStackTrace());
+		}
+		return null;
+
 	}
 }

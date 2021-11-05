@@ -8,7 +8,6 @@ import com.autoentry.server.entities.Label;
 
 public class Document implements Serializable
 {
-
 	static final long serialVersionUID = 1L;
 	private String sourcePath;
 	private String resultPath;

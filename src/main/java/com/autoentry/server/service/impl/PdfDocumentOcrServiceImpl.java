@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import com.autoentry.server.interfaces.BaseDocument;
 import com.autoentry.server.service.DocumentOcrService;
 import com.autoentry.server.util.ConnectionUtil;
-import com.autoentry.server.util.PdfTransferUtil;
 import com.google.api.gax.longrunning.OperationFuture;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Bucket;
@@ -51,7 +50,7 @@ public class PdfDocumentOcrServiceImpl implements DocumentOcrService
 	public Completable run() throws Exception
 	{
 		return Completable.fromAction(() -> {
-			runOcr();
+			//			runOcr(); //TODO dont make calls everytime (for testing)
 			buildDoc();
 		});
 	}
@@ -59,7 +58,7 @@ public class PdfDocumentOcrServiceImpl implements DocumentOcrService
 	public void runOcr() throws Exception
 	{
 		ConnectionUtil.authImplicit();
-		PdfTransferUtil.uploadObject(doc.getProjectId(), doc.getUploadBucketName(), "test", doc.getSourcePath());
+		//		PdfTransferUtil.uploadObject(doc.getProjectId(), doc.getUploadBucketName(), "test", doc.getSourcePath());
 
 		try (ImageAnnotatorClient client = ImageAnnotatorClient.create())
 		{

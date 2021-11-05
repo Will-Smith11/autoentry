@@ -8,7 +8,7 @@ import com.autoentry.server.beans.Document;
 @Configuration
 public class Config
 {
-	final static String sourcePathb = "C:\\Users\\Will\\git\\com.autoentry.server\\examples\\CD-00000067Docs202109101643.pdf";
+	final static String sourcePathb = "/com.autoentry.server/src/main/resources/CD-00000067Docs202109101643.pdf";
 	final static String resultPathb = "C:\\Users\\Will\\git\\com.autoentry\\results\\";
 	final static String projectIdb = "nodal-plexus-325621";
 	final static String uploadBucketNameb = "temp-upload-test";
