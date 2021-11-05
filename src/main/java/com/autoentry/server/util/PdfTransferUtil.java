@@ -43,15 +43,15 @@ public class PdfTransferUtil
 
 	public static PDDocument getDoc(String projectId, String bucketName, String objectName)
 	{
+		Storage storage = StorageOptions.newBuilder().setProjectId(projectId).build().getService();
+		Blob blob = storage.get(BlobId.of(bucketName, objectName));
 		try
 		{
-			Storage storage = StorageOptions.newBuilder().setProjectId(projectId).build().getService();
-			byte[] pdfBytes = storage.readAllBytes(BlobId.of(bucketName, objectName));
-			return PDDocument.load(pdfBytes);
+			return PDDocument.load(blob.getContent());
 		}
 		catch (Exception e)
 		{
-			System.out.println(e.getStackTrace());
+			e.printStackTrace();
 		}
 		return null;
 

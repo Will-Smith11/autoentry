@@ -18,8 +18,8 @@ public class Document implements Serializable
 	private boolean isTemplateCopy;
 	private Integer height;
 	private Integer width;
-	private float heightDiv;
-	private float widthDiv;
+	private float heightDiv = 1;
+	private float widthDiv = 1;
 	private double EPS = 3.0;
 	private HashMap<Label, DetectedDocumentData> results = new HashMap<>();
 

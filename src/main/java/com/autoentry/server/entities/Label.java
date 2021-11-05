@@ -2,6 +2,7 @@ package com.autoentry.server.entities;
 
 public class Label
 {
+
 	private BoundingBox outline;
 	private String label;
 
@@ -22,6 +23,12 @@ public class Label
 	}
 
 	public String getLabel()
+	{
+		return label;
+	}
+
+	@Override
+	public String toString()
 	{
 		return label;
 	}

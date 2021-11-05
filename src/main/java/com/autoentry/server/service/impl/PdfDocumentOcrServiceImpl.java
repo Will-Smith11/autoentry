@@ -147,6 +147,7 @@ public class PdfDocumentOcrServiceImpl implements DocumentOcrService
 					{
 						doc.setHeight(page.getHeight());
 						doc.setWidth(page.getWidth());
+						doc.setBlocks(page.getBlocksList());
 						//						doc.blocks = page.getBlocksList();
 
 						//					String pageText = "";
@@ -156,17 +157,20 @@ public class PdfDocumentOcrServiceImpl implements DocumentOcrService
 							//						BlockVertices v = new BlockVertices(poly.getVerticesList(), 1);
 							//						d.addBox(v);
 							//						String blockText = "";
+							doc.setParagrpah(block.getParagraphsList());
 
 							//							doc.paragraphs = block.getParagraphsList();
 
 							for (Paragraph para : block.getParagraphsList())
 							{
+								doc.setWords(para.getWordsList());
 								//							BoundingPoly poly = para.getBoundingBox();
 								//							BlockVertices v = new BlockVertices(poly.getVerticesList(), 1);
 								//							d.addBox(v);
 								//								doc.words = para.getWordsList();
 								for (Word word : para.getWordsList())
 								{
+									doc.setSymbols(word.getSymbolsList());
 									//									doc.smybols = word.getSymbolsList();
 									//								BoundingPoly polyW = word.getBoundingBox();
 									//								BlockVertices vW = new BlockVertices(polyW.getVerticesList(), 0);

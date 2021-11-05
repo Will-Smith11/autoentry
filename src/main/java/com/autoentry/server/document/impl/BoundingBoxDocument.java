@@ -1,10 +1,8 @@
 package com.autoentry.server.document.impl;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -29,6 +27,7 @@ import com.google.cloud.vision.v1.Symbol;
 import com.google.cloud.vision.v1.Word;
 
 import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.core.Single;
 
 @Component
 public class BoundingBoxDocument implements BaseDocument
@@ -103,9 +102,10 @@ public class BoundingBoxDocument implements BaseDocument
 		doc.setWidth(width);
 	}
 
-	private static List<Line> fixLines(List<Line> l, Document d)
+	private List<Line> fixLines(List<Line> l)
 	{
-		final int h = d.getHeight();
+
+		final int h = doc.getHeight();
 		return l.stream().map(v -> {
 			v.a.y = h - v.a.y;
 			v.b.y = h - v.b.y;
@@ -114,88 +114,184 @@ public class BoundingBoxDocument implements BaseDocument
 	}
 
 	@Override
-	public void genMeta() throws IOException
+	public Single<HashMap<Label, DetectedDocumentData>> getResults()
 	{
-		AtomicReference<PDDocument> pddoc = new AtomicReference<>();
-		//		return Completable.fromAction(() -> {
-		Completable.fromAction(() -> pddoc.set(PdfTransferUtil.getDoc(doc.getProjectId(), doc.getUploadBucketName(), "test")))
-				.blockingSubscribe(() -> {
-					boundingBoxes = bbg.getBoundingBoxes(fixLines(parser.run(pddoc.get()), doc), doc.getEPS());
-					//				doc.getEPS());
-				});
+		//		return null;
+		try
+		{
+			return genMeta().andThen(processMeta());
+			//			return processMeta();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		//		return doc.getResults();
+		return null;
+	}
+
+	public Completable genMeta() throws Exception
+	{
+		//		Single<PDDocument> single = Single.create(singleSubscriber -> {
+		//			PDDocument d = PdfTransferUtil.getDoc(doc.getProjectId(), doc.getUploadBucketName(), "test1");
+		//			ocr.run().subscribe();
+		//			singleSubscriber.onSuccess(d);
+		//		});
+		//
+		//		single.map(d -> {
+		//			List<Line> r = parser.run(d);
+		//			d.close();
+		//			return r;
+		//		}).map(l -> fixLines(l)).map(l -> bbg.getBoundingBoxes(l, doc.getEPS())).doOnSuccess(b -> boundingBoxes = b)
+		//				.blockingSubscribe();
+
+		return Completable.fromAction(() -> {
+			PDDocument d = PdfTransferUtil.getDoc(doc.getProjectId(), doc.getUploadBucketName(), "test1");
+			List<Line> l = parser.run(d);
+			d.close();
+			this.boundingBoxes = bbg.getBoundingBoxes(fixLines(l), doc.getEPS());
+			ocr.run().blockingAwait();
+		});
+
+		//		ocr.run().blockingSubscribe();
+
+		//		AtomicReference<PDDocument> pddoc = new AtomicReference<>();
+		//		//		return Completable.fromAction(() -> {
+		//		Completable.fromAction(() -> pddoc.set(PdfTransferUtil.getDoc(doc.getProjectId(), doc.getUploadBucketName(), "test")))
+		//				.blockingSubscribe(() -> {
+		//					boundingBoxes = bbg.getBoundingBoxes(fixLines(parser.run(pddoc.get())), doc.getEPS());
+		//					//				doc.getEPS());
+		//				});
 		//		PDDocument pddoc = PdfTransferUtil.getDoc(doc.getProjectId(), doc.getUploadBucketName(), "test");
 
 		//		System.out.println(pddoc.getNumberOfPages());
 		//		boundingBoxes = bbg.getBoundingBoxes(fixLines(parser.run(), doc),
 		//				doc.getEPS());
 
-		try
-		{
-			ocr.run().subscribe();
-		}
-		catch (Exception e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		//		});
+		//		try
+		//		{
+		//			ocr.run().subscribe();
+		//		}
+		//		catch (Exception e)
+		//		{
+		//			// TODO Auto-generated catch block
+		//			e.printStackTrace();
+		//		}
 	}
 
-	@Override
-	public void processMeta()
+	public Single<HashMap<Label, DetectedDocumentData>> processMeta()
 	{
-
-		List<RelatedBoundingBox<Block>> e = genRelation.getBlockBox();
-
-		int i = 0;
-		for (RelatedBoundingBox<Block> b : e)
-		{
-
-			String pageText = "";
-			for (Block block : b.getContent())
+		return Single.create(singleSubscriber -> {
+			HashMap<Label, DetectedDocumentData> gResults = new HashMap<>();
+			List<RelatedBoundingBox<Block>> e = genRelation.getBlockBox();
+			int i = 0;
+			for (RelatedBoundingBox<Block> b : e)
 			{
-				String blockText = "";
-				List<Paragraph> added = new ArrayList<>(block.getParagraphsList());
-				added.addAll(genRelation.getParaBox()
-						.stream()
-						.filter(v -> v.getBoundingBox().equals(b.getBoundingBox()))
-						.flatMap(v -> v.getContent().stream())
-						.collect(Collectors.toList()));
 
-				for (Paragraph para : added)
+				String pageText = "";
+				for (Block block : b.getContent())
 				{
-					String paraText = "";
-					List<Word> addedW = new ArrayList<>(para.getWordsList());
-					addedW.addAll(genRelation.getWordBox()
+					String blockText = "";
+					List<Paragraph> added = new ArrayList<>(block.getParagraphsList());
+					added.addAll(genRelation.getParaBox()
 							.stream()
 							.filter(v -> v.getBoundingBox().equals(b.getBoundingBox()))
 							.flatMap(v -> v.getContent().stream())
 							.collect(Collectors.toList()));
 
-					for (Word word : addedW)
+					for (Paragraph para : added)
 					{
-						String wordText = "";
-
-						List<Symbol> addedS = new ArrayList<>(word.getSymbolsList());
-						addedS.addAll(genRelation.getSymbolBox()
+						String paraText = "";
+						List<Word> addedW = new ArrayList<>(para.getWordsList());
+						addedW.addAll(genRelation.getWordBox()
 								.stream()
 								.filter(v -> v.getBoundingBox().equals(b.getBoundingBox()))
 								.flatMap(v -> v.getContent().stream())
 								.collect(Collectors.toList()));
 
-						for (Symbol symbol : addedS)
+						for (Word word : addedW)
 						{
-							wordText = wordText + symbol.getText();
+							String wordText = "";
+
+							List<Symbol> addedS = new ArrayList<>(word.getSymbolsList());
+							addedS.addAll(genRelation.getSymbolBox()
+									.stream()
+									.filter(v -> v.getBoundingBox().equals(b.getBoundingBox()))
+									.flatMap(v -> v.getContent().stream())
+									.collect(Collectors.toList()));
+
+							for (Symbol symbol : addedS)
+							{
+								wordText = wordText + symbol.getText();
+							}
+							paraText = String.format("%s %s", paraText, wordText);
 						}
-						paraText = String.format("%s %s", paraText, wordText);
+						blockText = blockText + paraText;
 					}
-					blockText = blockText + paraText;
+					pageText = pageText + blockText;
 				}
-				pageText = pageText + blockText;
+				gResults.put(new Label("test" + i, b.getBoundingBox()), new DetectedDocumentData(b.getBoundingBox(), pageText));
+				//			doc.addResult(new Label("test" + i, b.getBoundingBox()), new DetectedDocumentData(b.getBoundingBox(), pageText));
+				i++;
 			}
-			doc.addResult(new Label("test" + i, b.getBoundingBox()), new DetectedDocumentData(b.getBoundingBox(), pageText));
-			i++;
-		}
+			singleSubscriber.onSuccess(gResults);
+		});
+
+		//		HashMap<Label, DetectedDocumentData> gResults = new HashMap<>();
+		//		List<RelatedBoundingBox<Block>> e = genRelation.getBlockBox();
+		//
+		//		int i = 0;
+		//		for (RelatedBoundingBox<Block> b : e)
+		//		{
+		//
+		//			String pageText = "";
+		//			for (Block block : b.getContent())
+		//			{
+		//				String blockText = "";
+		//				List<Paragraph> added = new ArrayList<>(block.getParagraphsList());
+		//				added.addAll(genRelation.getParaBox()
+		//						.stream()
+		//						.filter(v -> v.getBoundingBox().equals(b.getBoundingBox()))
+		//						.flatMap(v -> v.getContent().stream())
+		//						.collect(Collectors.toList()));
+		//
+		//				for (Paragraph para : added)
+		//				{
+		//					String paraText = "";
+		//					List<Word> addedW = new ArrayList<>(para.getWordsList());
+		//					addedW.addAll(genRelation.getWordBox()
+		//							.stream()
+		//							.filter(v -> v.getBoundingBox().equals(b.getBoundingBox()))
+		//							.flatMap(v -> v.getContent().stream())
+		//							.collect(Collectors.toList()));
+		//
+		//					for (Word word : addedW)
+		//					{
+		//						String wordText = "";
+		//
+		//						List<Symbol> addedS = new ArrayList<>(word.getSymbolsList());
+		//						addedS.addAll(genRelation.getSymbolBox()
+		//								.stream()
+		//								.filter(v -> v.getBoundingBox().equals(b.getBoundingBox()))
+		//								.flatMap(v -> v.getContent().stream())
+		//								.collect(Collectors.toList()));
+		//
+		//						for (Symbol symbol : addedS)
+		//						{
+		//							wordText = wordText + symbol.getText();
+		//						}
+		//						paraText = String.format("%s %s", paraText, wordText);
+		//					}
+		//					blockText = blockText + paraText;
+		//				}
+		//				pageText = pageText + blockText;
+		//			}
+		//			gResults.put(new Label("test" + i, b.getBoundingBox()), new DetectedDocumentData(b.getBoundingBox(), pageText));
+		//			//			doc.addResult(new Label("test" + i, b.getBoundingBox()), new DetectedDocumentData(b.getBoundingBox(), pageText));
+		//			i++;
+		//		}
 
 	}
 
@@ -285,11 +381,5 @@ public class BoundingBoxDocument implements BaseDocument
 	{
 		this.smybols = symbols;
 
-	}
-
-	@Override
-	public HashMap<Label, DetectedDocumentData> getResults()
-	{
-		return doc.getResults();
 	}
 }

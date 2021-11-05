@@ -1,15 +1,11 @@
 package com.autoentry.server;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,19 +30,19 @@ public class ServerApplication
 	@Autowired
 	BaseDocument bDoc;
 
-	@Bean
-	public CommandLineRunner commandLineRunner(ApplicationContext ctx)
-	{
-		return args -> {
-			String[] beanNames = ctx.getBeanDefinitionNames();
-			Arrays.sort(beanNames);
-			for (String beanName : beanNames)
-			{
-				System.out.println(beanName);
-			}
-
-		};
-	}
+	//	@Bean
+	//	public CommandLineRunner commandLineRunner(ApplicationContext ctx)
+	//	{
+	//		return args -> {
+	//			String[] beanNames = ctx.getBeanDefinitionNames();
+	//			Arrays.sort(beanNames);
+	//			for (String beanName : beanNames)
+	//			{
+	//				System.out.println(beanName);
+	//			}
+	//
+	//		};
+	//	}
 
 	public static void main(String[] args)
 	{
@@ -61,20 +57,15 @@ public class ServerApplication
 	}
 
 	@GetMapping("/document")
-	public ResponseEntity<HashMap<Label, DetectedDocumentData>> document()
+	public ResponseEntity<HashMap<Label, DetectedDocumentData>> document() throws IOException
 	{
 
-		try
-		{
-			bDoc.genMeta();
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-		bDoc.processMeta();
+		//		bDoc.genMeta();
+		//
+		//		bDoc.processMeta();
+		//		HashMap<Label, DetectedDocumentData> results = bDoc.getResults();
 
-		return new ResponseEntity<>(bDoc.getResults(), HttpStatus.OK);
+		return new ResponseEntity<>(bDoc.getResults().blockingGet(), HttpStatus.OK);
 	}
 
 }

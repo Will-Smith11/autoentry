@@ -356,8 +356,9 @@ public class BoundingBoxGenImpl implements BoundingBoxGenService
 		//			allPoints.remove(p);
 		//		}
 		allPoints.remove(points[0]);
-		BoundingBox b = new BoundingBox(variance);
-		b.pointVals = points;
+		BoundingBox b = new BoundingBox();
+		b.setPoints(points);
+		//		b.pointVals = points;
 		//		if (!boxes.contains(b))
 		//		{
 		boxes.add(b);

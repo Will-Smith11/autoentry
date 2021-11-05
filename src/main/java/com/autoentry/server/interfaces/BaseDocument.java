@@ -1,6 +1,5 @@
 package com.autoentry.server.interfaces;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -12,8 +11,12 @@ import com.google.cloud.vision.v1.Paragraph;
 import com.google.cloud.vision.v1.Symbol;
 import com.google.cloud.vision.v1.Word;
 
+import io.reactivex.rxjava3.core.Single;
+
 public interface BaseDocument
 {
+	Single<HashMap<Label, DetectedDocumentData>> getResults();
+
 	String getSourcePath();
 
 	String getResultPath();
@@ -29,10 +32,6 @@ public interface BaseDocument
 	void setHeight(int height);
 
 	void setWidth(int width);
-
-	void genMeta() throws IOException;
-
-	void processMeta();
 
 	float getWidth();
 
@@ -62,6 +61,6 @@ public interface BaseDocument
 
 	void setSymbols(List<Symbol> symbols);
 
-	HashMap<Label, DetectedDocumentData> getResults();
+	//	HashMap<Label, DetectedDocumentData> getResults();
 
 }

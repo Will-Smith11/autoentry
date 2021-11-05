@@ -22,7 +22,7 @@ public class PageReaderListenerServiceImpl extends PDFGraphicsStreamEngine imple
 	private List<RelitivePoint> pushedPoints = new ArrayList<>();
 	private int pageNum;
 
-	protected PageReaderListenerServiceImpl(PDPage page, int pageNum)
+	public PageReaderListenerServiceImpl(PDPage page, int pageNum)
 	{
 		super(page);
 		this.pageNum = pageNum;
@@ -31,13 +31,8 @@ public class PageReaderListenerServiceImpl extends PDFGraphicsStreamEngine imple
 	@Override
 	public List<Line> getLines() throws IOException
 	{
-		processPage(getCurrentPage());
+		processPage(super.getPage());
 		return lines;
-	}
-
-	public void processPage() throws IOException
-	{
-		processPage(getCurrentPage());
 	}
 
 	private void buildLine()
