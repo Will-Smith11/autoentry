@@ -116,36 +116,19 @@ public class BoundingBoxDocument implements BaseDocument
 	@Override
 	public Single<HashMap<Label, DetectedDocumentData>> getResults()
 	{
-		//		return null;
 		try
 		{
 			return genMeta().andThen(processMeta());
-			//			return processMeta();
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
-
-		//		return doc.getResults();
 		return null;
 	}
 
 	public Completable genMeta() throws Exception
 	{
-		//		Single<PDDocument> single = Single.create(singleSubscriber -> {
-		//			PDDocument d = PdfTransferUtil.getDoc(doc.getProjectId(), doc.getUploadBucketName(), "test1");
-		//			ocr.run().subscribe();
-		//			singleSubscriber.onSuccess(d);
-		//		});
-		//
-		//		single.map(d -> {
-		//			List<Line> r = parser.run(d);
-		//			d.close();
-		//			return r;
-		//		}).map(l -> fixLines(l)).map(l -> bbg.getBoundingBoxes(l, doc.getEPS())).doOnSuccess(b -> boundingBoxes = b)
-		//				.blockingSubscribe();
-
 		return Completable.fromAction(() -> {
 			PDDocument d = PdfTransferUtil.getDoc(doc.getProjectId(), doc.getUploadBucketName(), "test1");
 			List<Line> l = parser.run(d);
@@ -154,39 +137,18 @@ public class BoundingBoxDocument implements BaseDocument
 			ocr.run().blockingAwait();
 		});
 
-		//		ocr.run().blockingSubscribe();
-
-		//		AtomicReference<PDDocument> pddoc = new AtomicReference<>();
-		//		//		return Completable.fromAction(() -> {
-		//		Completable.fromAction(() -> pddoc.set(PdfTransferUtil.getDoc(doc.getProjectId(), doc.getUploadBucketName(), "test")))
-		//				.blockingSubscribe(() -> {
-		//					boundingBoxes = bbg.getBoundingBoxes(fixLines(parser.run(pddoc.get())), doc.getEPS());
-		//					//				doc.getEPS());
-		//				});
-		//		PDDocument pddoc = PdfTransferUtil.getDoc(doc.getProjectId(), doc.getUploadBucketName(), "test");
-
-		//		System.out.println(pddoc.getNumberOfPages());
-		//		boundingBoxes = bbg.getBoundingBoxes(fixLines(parser.run(), doc),
-		//				doc.getEPS());
-
-		//		});
-		//		try
-		//		{
-		//			ocr.run().subscribe();
-		//		}
-		//		catch (Exception e)
-		//		{
-		//			// TODO Auto-generated catch block
-		//			e.printStackTrace();
-		//		}
 	}
 
+	@SuppressWarnings("unlikely-arg-type")
 	public Single<HashMap<Label, DetectedDocumentData>> processMeta()
 	{
 		return Single.create(singleSubscriber -> {
+
 			HashMap<Label, DetectedDocumentData> gResults = new HashMap<>();
+			List<Label> labelsFound = new ArrayList<>();
+			List<DetectedDocumentData> dataFound = new ArrayList<>();
+
 			List<RelatedBoundingBox<Block>> e = genRelation.getBlockBox();
-			int i = 0;
 			for (RelatedBoundingBox<Block> b : e)
 			{
 
@@ -232,67 +194,52 @@ public class BoundingBoxDocument implements BaseDocument
 					}
 					pageText = pageText + blockText;
 				}
-				gResults.put(new Label("test" + i, b.getBoundingBox()), new DetectedDocumentData(b.getBoundingBox(), pageText));
-				//			doc.addResult(new Label("test" + i, b.getBoundingBox()), new DetectedDocumentData(b.getBoundingBox(), pageText));
-				i++;
+				boolean isLabel = false;
+				for (String l : doc.getLabels()) // sees if detected text is a label
+				{
+					if (pageText.contains(l))
+					{
+						String otherText = pageText.substring(pageText.indexOf(l));
+						if (otherText.length() < 1)
+						{
+							isLabel = true;
+						}
+
+						Label lb = new Label(l, b.getBoundingBox());
+						if (!labelsFound.contains(lb))
+						{
+							labelsFound.add(lb);
+						}
+						pageText = otherText;
+						break;
+					}
+				}
+				if (!isLabel)
+				{
+					DetectedDocumentData d = new DetectedDocumentData(b.getBoundingBox(), pageText);
+					if (!dataFound.contains(d))
+					{
+						dataFound.add(d);
+					}
+					else
+					{
+						DetectedDocumentData got = dataFound.get(dataFound.indexOf(d));
+						got.addText(pageText);
+					}
+				}
 			}
+
+			for (Label label : labelsFound)
+			{
+				if (dataFound.contains(label))
+				{
+					DetectedDocumentData d = dataFound.get(dataFound.indexOf(label));
+					gResults.put(label, d);
+				}
+			}
+
 			singleSubscriber.onSuccess(gResults);
 		});
-
-		//		HashMap<Label, DetectedDocumentData> gResults = new HashMap<>();
-		//		List<RelatedBoundingBox<Block>> e = genRelation.getBlockBox();
-		//
-		//		int i = 0;
-		//		for (RelatedBoundingBox<Block> b : e)
-		//		{
-		//
-		//			String pageText = "";
-		//			for (Block block : b.getContent())
-		//			{
-		//				String blockText = "";
-		//				List<Paragraph> added = new ArrayList<>(block.getParagraphsList());
-		//				added.addAll(genRelation.getParaBox()
-		//						.stream()
-		//						.filter(v -> v.getBoundingBox().equals(b.getBoundingBox()))
-		//						.flatMap(v -> v.getContent().stream())
-		//						.collect(Collectors.toList()));
-		//
-		//				for (Paragraph para : added)
-		//				{
-		//					String paraText = "";
-		//					List<Word> addedW = new ArrayList<>(para.getWordsList());
-		//					addedW.addAll(genRelation.getWordBox()
-		//							.stream()
-		//							.filter(v -> v.getBoundingBox().equals(b.getBoundingBox()))
-		//							.flatMap(v -> v.getContent().stream())
-		//							.collect(Collectors.toList()));
-		//
-		//					for (Word word : addedW)
-		//					{
-		//						String wordText = "";
-		//
-		//						List<Symbol> addedS = new ArrayList<>(word.getSymbolsList());
-		//						addedS.addAll(genRelation.getSymbolBox()
-		//								.stream()
-		//								.filter(v -> v.getBoundingBox().equals(b.getBoundingBox()))
-		//								.flatMap(v -> v.getContent().stream())
-		//								.collect(Collectors.toList()));
-		//
-		//						for (Symbol symbol : addedS)
-		//						{
-		//							wordText = wordText + symbol.getText();
-		//						}
-		//						paraText = String.format("%s %s", paraText, wordText);
-		//					}
-		//					blockText = blockText + paraText;
-		//				}
-		//				pageText = pageText + blockText;
-		//			}
-		//			gResults.put(new Label("test" + i, b.getBoundingBox()), new DetectedDocumentData(b.getBoundingBox(), pageText));
-		//			//			doc.addResult(new Label("test" + i, b.getBoundingBox()), new DetectedDocumentData(b.getBoundingBox(), pageText));
-		//			i++;
-		//		}
-
 	}
 
 	@Override

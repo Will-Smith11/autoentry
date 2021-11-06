@@ -1,13 +1,7 @@
 package com.autoentry.server.entities;
 
-import java.io.Serializable;
-
-public class DetectedDocumentData implements Serializable
+public class DetectedDocumentData
 {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -8598853071261903152L;
 	private String pgText;
 	private BoundingBox boundingBox;
 
@@ -27,14 +21,38 @@ public class DetectedDocumentData implements Serializable
 		this.pgText = pgText;
 	}
 
-	public BoundingBox getB()
+	public void addText(String text)
+	{
+		if (!pgText.contains(text))
+		{
+			pgText += " " + text;
+		}
+	}
+
+	public BoundingBox getBoundingBox()
 	{
 		return boundingBox;
 	}
 
-	public void setB(BoundingBox b)
+	public void setBoundingBox(BoundingBox b)
 	{
 		this.boundingBox = b;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (obj instanceof DetectedDocumentData)
+		{
+			DetectedDocumentData d = (DetectedDocumentData) obj;
+			return (d.getPgText().equals(this.pgText) || d.getBoundingBox().equals(this.boundingBox));
+		}
+		else if (obj instanceof Label)
+		{
+			Label l = (Label) obj;
+			return l.getOutline().equals(this.boundingBox);
+		}
+		return false;
 	}
 
 	@Override

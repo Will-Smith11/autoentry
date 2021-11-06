@@ -32,7 +32,7 @@ public class RelatedBoundingBox<T>
 	@Override
 	public boolean equals(Object obj)
 	{
-		if (obj instanceof RelatedBoundingBox<?>)
+		if (obj instanceof RelatedBoundingBox)
 		{
 			RelatedBoundingBox<?> b = (RelatedBoundingBox<?>) obj;
 			return b.box.equals(box);

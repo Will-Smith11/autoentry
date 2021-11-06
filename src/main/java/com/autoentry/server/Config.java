@@ -1,5 +1,7 @@
 package com.autoentry.server;
 
+import java.util.Arrays;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -17,7 +19,10 @@ public class Config
 	@Bean
 	public Document document()
 	{
-		return new Document(sourcePathb, resultPathb, projectIdb, uploadBucketNameb, "gs://temp-upload-test/test",
+		Document d = new Document(sourcePathb, resultPathb, projectIdb, uploadBucketNameb, "gs://temp-upload-test/test",
 				"gs://temp-download-test/test", true);
+		d.setLabels(Arrays.asList("Destination:", "Origin Station:", "Container:", "Master Loader:", "Air/Port of Loading:", "Pier/Terminal:",
+				"Ocean B\\L - MAWB no:", "E.T.Arriv.:", "Air/Port of DIScharge:", "Vessel/Airline:", "Master HOBL:", "Departure Date:"));
+		return d;
 	}
 }

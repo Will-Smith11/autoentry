@@ -23,7 +23,7 @@ public class RelitivePoint extends Point
 			return false;
 		}
 		RelitivePoint rp = (RelitivePoint) obj;
-		return (Math.abs(this.x - rp.x) < variance && Math.abs(this.y - rp.y) < variance);
+		return (Math.abs(this.x - rp.x) <= variance && Math.abs(this.y - rp.y) <= variance);
 	}
 
 	public boolean relitiveLNX(RelitivePoint p)

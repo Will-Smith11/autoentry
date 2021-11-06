@@ -41,6 +41,19 @@ public class Label
 			Label l = (Label) obj;
 			return this.label.equals(l.getLabel());
 		}
-		return false;
+		else if (obj instanceof BoundingBox)
+		{
+			BoundingBox b = (BoundingBox) obj;
+			return this.outline.equals(b);
+		}
+		else if (obj instanceof DetectedDocumentData)
+		{
+			DetectedDocumentData d = (DetectedDocumentData) obj;
+			return this.outline.equals(d.getBoundingBox());
+		}
+		else
+		{
+			return false;
+		}
 	}
 }

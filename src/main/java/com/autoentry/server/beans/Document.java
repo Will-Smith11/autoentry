@@ -1,10 +1,7 @@
 package com.autoentry.server.beans;
 
 import java.io.Serializable;
-import java.util.HashMap;
-
-import com.autoentry.server.entities.DetectedDocumentData;
-import com.autoentry.server.entities.Label;
+import java.util.List;
 
 public class Document implements Serializable
 {
@@ -21,7 +18,7 @@ public class Document implements Serializable
 	private float heightDiv = 1;
 	private float widthDiv = 1;
 	private double EPS = 3.0;
-	private HashMap<Label, DetectedDocumentData> results = new HashMap<>();
+	private List<String> labels;
 
 	public Document(String srcPath, String outPath, String projectId, String uploadBucketName, String gcsSrcPath, String gcsDestPath,
 			boolean isTemplate)
@@ -51,11 +48,6 @@ public class Document implements Serializable
 		this.width = width;
 		this.heightDiv = heightDiv;
 		this.widthDiv = widthDiv;
-	}
-
-	public void addResult(Label label, DetectedDocumentData d)
-	{
-		this.results.put(label, d);
 	}
 
 	public String getSourcePath()
@@ -173,16 +165,6 @@ public class Document implements Serializable
 		return serialVersionUID;
 	}
 
-	public HashMap<Label, DetectedDocumentData> getResults()
-	{
-		return results;
-	}
-
-	public void setResults(HashMap<Label, DetectedDocumentData> results)
-	{
-		this.results = results;
-	}
-
 	@Override
 	public int hashCode()
 	{
@@ -285,5 +267,15 @@ public class Document implements Serializable
 	public void setEPS(double ePS)
 	{
 		EPS = ePS;
+	}
+
+	public List<String> getLabels()
+	{
+		return labels;
+	}
+
+	public void setLabels(List<String> labels)
+	{
+		this.labels = labels;
 	}
 }

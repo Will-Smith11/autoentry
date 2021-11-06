@@ -30,24 +30,9 @@ public class ServerApplication
 	@Autowired
 	BaseDocument bDoc;
 
-	//	@Bean
-	//	public CommandLineRunner commandLineRunner(ApplicationContext ctx)
-	//	{
-	//		return args -> {
-	//			String[] beanNames = ctx.getBeanDefinitionNames();
-	//			Arrays.sort(beanNames);
-	//			for (String beanName : beanNames)
-	//			{
-	//				System.out.println(beanName);
-	//			}
-	//
-	//		};
-	//	}
-
 	public static void main(String[] args)
 	{
 		SpringApplication.run(ServerApplication.class, args);
-
 	}
 
 	@GetMapping("/hello")
@@ -59,12 +44,6 @@ public class ServerApplication
 	@GetMapping("/document")
 	public ResponseEntity<HashMap<Label, DetectedDocumentData>> document() throws IOException
 	{
-
-		//		bDoc.genMeta();
-		//
-		//		bDoc.processMeta();
-		//		HashMap<Label, DetectedDocumentData> results = bDoc.getResults();
-
 		return new ResponseEntity<>(bDoc.getResults().blockingGet(), HttpStatus.OK);
 	}
 
