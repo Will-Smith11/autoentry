@@ -56,27 +56,6 @@ public class BoundingBoxGenImpl implements BoundingBoxGenService
 		});
 	}
 
-	//	public void Build(Mat linesP, double ePS)
-	//	{
-	//		this.variance = ePS;
-	//		buildSearchFuncitons();
-	//
-	//		for (int x = 0; x < linesP.rows(); x++) // gen list of lines
-	//		{
-	//			double[] l = linesP.get(x, 0);
-	//
-	//			allPoints.add(new RelitivePoint(l[0], l[1], variance));
-	//			allPoints.add(new RelitivePoint(l[2], l[3], variance));
-	//			//
-	//			lines.add(new Line(new RelitivePoint(l[0], l[1], variance), new RelitivePoint(l[2], l[3], variance)));
-	//		}
-	//		genIntersectionPoints();
-	//		copy = new ArrayList<>(allPoints);
-	//		//		genBoundingBoxes();
-	//		genBoxesV2();
-	//		//		System.out.println(boxes);
-	//	}
-
 	private void buildSearchFuncitons()
 	{
 		rdlu.add(this::rd);
@@ -180,8 +159,6 @@ public class BoundingBoxGenImpl implements BoundingBoxGenService
 		}
 		return result;
 	}
-
-	//TODO add functionally so that we aren't able to cross pre Detected lines from point to point
 
 	private boolean buildFromPoint(RelitivePoint p, List<Function<RelitivePoint, RelitivePoint>> functionList)
 	{
@@ -421,21 +398,6 @@ public class BoundingBoxGenImpl implements BoundingBoxGenService
 				diffPair[1][1] = p;
 			}
 		}
-		//		String sameX = "";
-		//		String sameY = "";
-		//		String diff = "";
-		//		for (int i = 0; i < 2; i++)
-		//		{
-		//			for (int j = 0; j < 2; j++)
-		//			{
-		//				sameX += "SameXPair[" + i + "][" + j + "] :" + sameXPairs[i][j] + "\n";
-		//				sameY += "SameYPair[" + i + "][" + j + "] :" + sameYPairs[i][j] + "\n";
-		//				diff += "DiffPair[" + i + "][" + j + "] :" + diffPair[i][j] + "\n";
-		//			}
-		//		}
-		//		System.out.println(sameX);
-		//		System.out.println(sameY);
-		//		System.out.println(diff);
 
 		return (fullArray(sameXPairs) && fullArray(sameYPairs) && fullArray(diffPair));
 	}
@@ -467,8 +429,6 @@ public class BoundingBoxGenImpl implements BoundingBoxGenService
 				return (int) (o1.x - o2.x);
 			}
 		});
-		//		System.out.println("get right");
-		//		System.out.println(allPoints);
 		for (int i = 0; i < allPoints.size(); i++)
 		{
 			RelitivePoint otherP = allPoints.get(i);

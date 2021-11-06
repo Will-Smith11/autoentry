@@ -61,6 +61,4 @@ public interface BaseDocument
 
 	void setSymbols(List<Symbol> symbols);
 
-	//	HashMap<Label, DetectedDocumentData> getResults();
-
 }

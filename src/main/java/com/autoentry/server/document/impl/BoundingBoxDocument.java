@@ -195,11 +195,22 @@ public class BoundingBoxDocument implements BaseDocument
 					pageText = pageText + blockText;
 				}
 				boolean isLabel = false;
+
 				for (String l : doc.getLabels()) // sees if detected text is a label
 				{
 					if (pageText.contains(l))
 					{
-						String otherText = pageText.substring(pageText.indexOf(l));
+						//						pageText.ind
+						String otherText = "";
+						if (pageText.startsWith(l))
+						{
+							otherText = pageText.substring(l.length());
+						}
+						else
+						{
+							otherText = pageText;
+						}
+
 						if (otherText.length() < 1)
 						{
 							isLabel = true;
