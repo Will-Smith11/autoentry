@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.autoentry.server.beans.Document;
 import com.autoentry.server.entities.BoundingBox;
+import com.autoentry.server.entities.DPage;
 import com.autoentry.server.entities.DetectedDocumentData;
 import com.autoentry.server.entities.Label;
 import com.autoentry.server.entities.Line;
@@ -131,9 +132,13 @@ public class BoundingBoxDocument implements BaseDocument
 	{
 		return Completable.fromAction(() -> {
 			PDDocument d = PdfTransferUtil.getDoc(doc.getProjectId(), doc.getUploadBucketName(), "test1");
-			List<Line> l = parser.run(d);
+			parser.run(d).blockingSubscribe();
 			d.close();
-			this.boundingBoxes = bbg.getBoundingBoxes(fixLines(l), doc.getEPS());
+			for (DPage page : doc.getPages())
+			{
+				page.setBoundingBoxes(bbg.getBoundingBoxes(fixLines(page.getLines()), doc.getEPS()));
+			}
+			//			this.boundingBoxes = bbg.getBoundingBoxes(fixLines(l), doc.getEPS());
 			ocr.run().blockingAwait();
 		});
 
@@ -339,5 +344,21 @@ public class BoundingBoxDocument implements BaseDocument
 	{
 		this.smybols = symbols;
 
+	}
+
+	public List<DPage> getPages()
+	{
+		return doc.getPages();
+	}
+
+	public void setPages(List<DPage> pages)
+	{
+		doc.setPages(pages);
+	}
+
+	@Override
+	public void addPage(DPage page)
+	{
+		doc.addPage(page);
 	}
 }

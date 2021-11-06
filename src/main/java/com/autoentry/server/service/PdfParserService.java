@@ -1,13 +1,12 @@
 package com.autoentry.server.service;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 
-import com.autoentry.server.entities.Line;
+import io.reactivex.rxjava3.core.Completable;
 
 public interface PdfParserService
 {
-	public List<Line> run(PDDocument doc) throws IOException;
+	public Completable run(PDDocument doc) throws IOException;
 }

@@ -9,6 +9,8 @@ import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.autoentry.server.beans.Document;
+import com.autoentry.server.entities.DPage;
 import com.autoentry.server.interfaces.BaseDocument;
 import com.autoentry.server.service.DocumentOcrService;
 import com.autoentry.server.util.ConnectionUtil;
@@ -45,6 +47,9 @@ public class PdfDocumentOcrServiceImpl implements DocumentOcrService
 {
 	@Autowired
 	private BaseDocument doc;
+
+	@Autowired
+	private Document mDoc;
 
 	@Override
 	public Completable run() throws Exception
@@ -142,53 +147,40 @@ public class PdfDocumentOcrServiceImpl implements DocumentOcrService
 				for (AnnotateImageResponse res : annotateFileResponse.getResponsesList())
 				{
 					TextAnnotation annotation = res.getFullTextAnnotation();
-					pgNum++;
+
 					for (Page page : annotation.getPagesList())
 					{
-						doc.setHeight(page.getHeight());
-						doc.setWidth(page.getWidth());
-						doc.setBlocks(page.getBlocksList());
-						//						doc.blocks = page.getBlocksList();
+						//						mDoc.getPage(pgNum)
+						DPage dPage = mDoc.getPage(pgNum);
+						dPage.setBlocks(page.getBlocksList());
+						//						doc.setHeight(page.getHeight());
+						//						doc.setWidth(page.getWidth());
+						//						doc.setBlocks(page.getBlocksList());
 
-						//					String pageText = "";
 						for (Block block : page.getBlocksList())
 						{
-							//						BoundingPoly poly = block.getBoundingBox();
-							//						BlockVertices v = new BlockVertices(poly.getVerticesList(), 1);
-							//						d.addBox(v);
-							//						String blockText = "";
-							doc.setParagrpah(block.getParagraphsList());
+							dPage.setParagraphs(block.getParagraphsList());
 
-							//							doc.paragraphs = block.getParagraphsList();
+							doc.setParagrpah(block.getParagraphsList());
 
 							for (Paragraph para : block.getParagraphsList())
 							{
+								dPage.setWords(para.getWordsList());
 								doc.setWords(para.getWordsList());
-								//							BoundingPoly poly = para.getBoundingBox();
-								//							BlockVertices v = new BlockVertices(poly.getVerticesList(), 1);
-								//							d.addBox(v);
-								//								doc.words = para.getWordsList();
+
 								for (Word word : para.getWordsList())
 								{
+									dPage.setSmybols(word.getSymbolsList());
 									doc.setSymbols(word.getSymbolsList());
-									//									doc.smybols = word.getSymbolsList();
-									//								BoundingPoly polyW = word.getBoundingBox();
-									//								BlockVertices vW = new BlockVertices(polyW.getVerticesList(), 0);
-									//								d.addBox(vW);
 
-									//								for (Symbol symbol : word.getSymbolsList())
-									//								{
-									//									//																		BoundingPoly polyS = symbol.getBoundingBox();
-									//									//																		BlockVertices vS = new BlockVertices(polyS.getVerticesList(), 1);
-									//									//																		d.setSmybols(smybols);
-									//								}
 								}
 
 							}
 
 						}
-
+						//						doc.addPage(dPage);
 					}
+					pgNum++;
 
 				}
 

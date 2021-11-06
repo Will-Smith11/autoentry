@@ -1,7 +1,10 @@
 package com.autoentry.server.beans;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+
+import com.autoentry.server.entities.DPage;
 
 public class Document implements Serializable
 {
@@ -19,6 +22,7 @@ public class Document implements Serializable
 	private float widthDiv = 1;
 	private double EPS = 3.0;
 	private List<String> labels;
+	private List<DPage> pages = new ArrayList<>();
 
 	public Document(String srcPath, String outPath, String projectId, String uploadBucketName, String gcsSrcPath, String gcsDestPath,
 			boolean isTemplate)
@@ -48,6 +52,12 @@ public class Document implements Serializable
 		this.width = width;
 		this.heightDiv = heightDiv;
 		this.widthDiv = widthDiv;
+	}
+
+	@SuppressWarnings("unlikely-arg-type")
+	public DPage getPage(int pageNum)
+	{
+		return pages.get(pages.indexOf(pageNum));
 	}
 
 	public String getSourcePath()
@@ -277,5 +287,20 @@ public class Document implements Serializable
 	public void setLabels(List<String> labels)
 	{
 		this.labels = labels;
+	}
+
+	public List<DPage> getPages()
+	{
+		return pages;
+	}
+
+	public void setPages(List<DPage> pages)
+	{
+		this.pages = pages;
+	}
+
+	public void addPage(DPage page)
+	{
+		this.pages.add(page);
 	}
 }

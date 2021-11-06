@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.autoentry.server.entities.BoundingBox;
+import com.autoentry.server.entities.DPage;
 import com.autoentry.server.entities.DetectedDocumentData;
 import com.autoentry.server.entities.Label;
 import com.google.cloud.vision.v1.Block;
@@ -60,5 +61,7 @@ public interface BaseDocument
 	void setWords(List<Word> words);
 
 	void setSymbols(List<Symbol> symbols);
+
+	void addPage(DPage page);
 
 }
