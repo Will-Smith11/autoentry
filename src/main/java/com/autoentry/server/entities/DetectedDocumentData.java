@@ -23,10 +23,7 @@ public class DetectedDocumentData
 
 	public void addText(String text)
 	{
-		if (!pgText.contains(text))
-		{
-			pgText += " " + text;
-		}
+		pgText += " " + text;
 	}
 
 	public BoundingBox getBoundingBox()

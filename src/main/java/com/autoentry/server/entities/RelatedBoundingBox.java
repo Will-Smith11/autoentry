@@ -21,7 +21,10 @@ public class RelatedBoundingBox<T>
 
 	public void addContent(T content)
 	{
-		this.content.add(content);
+		if (!this.content.contains(content))
+		{
+			this.content.add(content);
+		}
 	}
 
 	public List<T> getContent()
