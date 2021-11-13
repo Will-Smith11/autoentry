@@ -4,6 +4,7 @@ public class DetectedDocumentData
 {
 	private String pgText;
 	private BoundingBox boundingBox;
+	private Integer pgNum;
 
 	public DetectedDocumentData(BoundingBox boundingBox, String pageText)
 	{
@@ -56,6 +57,16 @@ public class DetectedDocumentData
 	public String toString()
 	{
 		return pgText;
+	}
+
+	public Integer getPgNum()
+	{
+		return pgNum;
+	}
+
+	public void setPgNum(Integer pgNum)
+	{
+		this.pgNum = pgNum;
 	}
 
 }
