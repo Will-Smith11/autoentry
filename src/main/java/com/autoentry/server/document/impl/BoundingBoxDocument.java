@@ -103,10 +103,10 @@ public class BoundingBoxDocument implements BaseDocument
 		doc.setWidth(width);
 	}
 
-	private List<Line> fixLines(List<Line> l)
+	private List<Line> fixLines(List<Line> l, DPage page)
 	{
 
-		final int h = doc.getHeight();
+		final int h = page.getPageHeight();
 		return l.stream().map(v -> {
 			v.a.y = h - v.a.y;
 			v.b.y = h - v.b.y;
@@ -136,7 +136,7 @@ public class BoundingBoxDocument implements BaseDocument
 			d.close();
 			for (DPage page : doc.getPages())
 			{
-				page.setBoundingBoxes(bbg.getBoundingBoxes(fixLines(page.getLines()), doc.getEPS()));
+				page.setBoundingBoxes(bbg.getBoundingBoxes(fixLines(page.getLines(), page), doc.getEPS()));
 			}
 			//			this.boundingBoxes = bbg.getBoundingBoxes(fixLines(l), doc.getEPS());
 			ocr.run().blockingAwait();

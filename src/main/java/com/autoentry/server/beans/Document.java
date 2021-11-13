@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.autoentry.server.entities.DPage;
+import com.autoentry.server.exceptions.PageDoesNotExistException;
 
 public class Document implements Serializable
 {
@@ -23,6 +24,7 @@ public class Document implements Serializable
 	private double EPS = 3.0;
 	private List<String> labels;
 	private List<DPage> pages = new ArrayList<>();
+	private Integer pageAmount = 0;
 
 	public Document(String srcPath, String outPath, String projectId, String uploadBucketName, String gcsSrcPath, String gcsDestPath,
 			boolean isTemplate)
@@ -54,10 +56,21 @@ public class Document implements Serializable
 		this.widthDiv = widthDiv;
 	}
 
-	@SuppressWarnings("unlikely-arg-type")
 	public DPage getPage(int pageNum)
 	{
-		return pages.get(pages.indexOf(pageNum));
+		if (pageNum <= pageAmount)
+		{
+			return pages.get(pageNum);
+		}
+		else
+		{
+			throw new PageDoesNotExistException("The page number: " + pageNum + "doesn't exist");
+		}
+	}
+
+	public void pageCountAdd()
+	{
+		this.pageAmount++;
 	}
 
 	public String getSourcePath()
@@ -302,5 +315,15 @@ public class Document implements Serializable
 	public void addPage(DPage page)
 	{
 		this.pages.add(page);
+	}
+
+	public Integer getPageAmount()
+	{
+		return pageAmount;
+	}
+
+	public void setPageAmount(Integer pageAmount)
+	{
+		this.pageAmount = pageAmount;
 	}
 }

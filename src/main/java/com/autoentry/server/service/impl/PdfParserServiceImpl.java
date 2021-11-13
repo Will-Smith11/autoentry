@@ -31,6 +31,7 @@ public class PdfParserServiceImpl implements PdfParserService
 				PageReaderListenerService reader = new PageReaderListenerServiceImpl(p, i);
 				page.setLines(reader.getLines());
 				mDoc.addPage(page);
+				mDoc.pageCountAdd();
 				i++;
 			}
 			doc.close();

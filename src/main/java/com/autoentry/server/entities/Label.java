@@ -5,11 +5,19 @@ public class Label
 
 	private BoundingBox outline;
 	private String label;
+	private BoundingBox labelLocation;
 
 	public Label(String label, BoundingBox outline)
 	{
 		this.outline = outline;
 		this.label = label;
+	}
+
+	public Label(String label, BoundingBox outline, BoundingBox labelLocation)
+	{
+		this.outline = outline;
+		this.label = label;
+		this.labelLocation = labelLocation;
 	}
 
 	public BoundingBox getOutline()
@@ -25,6 +33,16 @@ public class Label
 	public String getLabel()
 	{
 		return label;
+	}
+
+	public BoundingBox getLabelLocation()
+	{
+		return labelLocation;
+	}
+
+	public void setLabelLocation(BoundingBox labelLocation)
+	{
+		this.labelLocation = labelLocation;
 	}
 
 	@Override
@@ -44,7 +62,7 @@ public class Label
 		else if (obj instanceof BoundingBox)
 		{
 			BoundingBox b = (BoundingBox) obj;
-			return this.outline.equals(b);
+			return (this.outline.equals(b) || this.labelLocation.equals(b));
 		}
 		else if (obj instanceof DetectedDocumentData)
 		{
@@ -56,4 +74,5 @@ public class Label
 			return false;
 		}
 	}
+
 }
