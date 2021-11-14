@@ -144,6 +144,13 @@ public class BoundingBoxDocument implements BaseDocument
 
 	}
 
+	public Single<HashMap<Label, DetectedDocumentData>> processMetaV2()
+	{
+		return Single.create(singleSub -> {
+
+		});
+	}
+
 	@SuppressWarnings("unlikely-arg-type")
 	public Single<HashMap<Label, DetectedDocumentData>> processMeta()
 	{
