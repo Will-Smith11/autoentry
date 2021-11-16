@@ -49,4 +49,45 @@ public class DetectedBlock
 
 		this.detectedParagraphList = detectedParagraphList;
 	}
+
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((boundingPoly == null) ? 0 : boundingPoly.hashCode());
+		result = prime * result + ((detectedParagraphList == null) ? 0 : detectedParagraphList.hashCode());
+		result = prime * result + pageNum;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		DetectedBlock other = (DetectedBlock) obj;
+		if (boundingPoly == null)
+		{
+			if (other.boundingPoly != null)
+				return false;
+		}
+		else if (!boundingPoly.equals(other.boundingPoly))
+			return false;
+		if (detectedParagraphList == null)
+		{
+			if (other.detectedParagraphList != null)
+				return false;
+		}
+		else if (!detectedParagraphList.equals(other.detectedParagraphList))
+			return false;
+		if (pageNum != other.pageNum)
+			return false;
+		return true;
+	}
+
 }

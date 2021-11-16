@@ -12,6 +12,13 @@ public class DetectedDocumentData
 		this.boundingBox = boundingBox;
 	}
 
+	public DetectedDocumentData(BoundingBox boundingBox, String pageText, Integer pgNum)
+	{
+		this.pgText = pageText;
+		this.boundingBox = boundingBox;
+		this.pgNum = pgNum;
+	}
+
 	public String getPgText()
 	{
 		return pgText;

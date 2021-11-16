@@ -15,6 +15,7 @@ public class DPage
 	private List<DetectedSymbol> smybols = new ArrayList<>();
 	private List<BoundingBox> boundingBoxes = new ArrayList<>();
 	private List<Line> lines = new ArrayList<>();
+	private List<RelitivePoint> allPoints = new ArrayList<>();
 	private HashMap<Label, DetectedDocumentData> pageResults = new HashMap<>();
 
 	public DPage(int pageNum, int pageHeight, int pageWidth)
@@ -22,6 +23,26 @@ public class DPage
 		this.pageNum = pageNum;
 		this.pageHeight = pageHeight;
 		this.pageWidth = pageWidth;
+	}
+
+	public List<RelitivePoint> getPoints()
+	{
+		return this.allPoints;
+	}
+
+	public void addPoint(RelitivePoint p)
+	{
+		allPoints.add(p);
+	}
+
+	public void removePoint(RelitivePoint p)
+	{
+		allPoints.remove(p);
+	}
+
+	public void removePoint(Integer i)
+	{
+		allPoints.remove(i);
 	}
 
 	public int getPageNum()

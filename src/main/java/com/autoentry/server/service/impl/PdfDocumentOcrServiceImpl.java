@@ -3,7 +3,7 @@ package com.autoentry.server.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -67,7 +67,7 @@ public class PdfDocumentOcrServiceImpl implements DocumentOcrService
 	public void runOcr() throws Exception
 	{
 		ConnectionUtil.authImplicit();
-		PdfTransferUtil.uploadObject(doc.getProjectId(), doc.getUploadBucketName(), "test", doc.getSourcePath());
+		PdfTransferUtil.uploadObject(doc.getProjectId(), doc.getUploadBucketName(), doc.getDocUploadName(), doc.getSourcePath());
 
 		try (ImageAnnotatorClient client = ImageAnnotatorClient.create())
 		{
@@ -123,7 +123,7 @@ public class PdfDocumentOcrServiceImpl implements DocumentOcrService
 		// Get the destination location from the gcsDestinationPath
 		Pattern pattern = Pattern.compile("gs://([^/]+)/(.+)");
 		Matcher matcher = pattern.matcher(doc.getGcsDestPath());
-		AtomicReference<Integer> pgNum = new AtomicReference<Integer>(0);
+		AtomicInteger pgNum = new AtomicInteger(0);
 
 		if (matcher.find())
 		{
@@ -165,12 +165,10 @@ public class PdfDocumentOcrServiceImpl implements DocumentOcrService
 												p.getBoundingBox())).collect(Collectors.toList()),
 										pgNum.get(), b.getBoundingBox()))
 								.collect(Collectors.toList()));
+						pgNum.getAndIncrement();
 					}
-
 				}
-
 			}
-			pgNum.getAndUpdate(v -> v++);
 		}
 		else
 		{

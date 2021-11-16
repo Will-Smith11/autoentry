@@ -12,8 +12,8 @@ import static java.lang.Math.abs;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 public class LineSegmentLineSegmentIntersection
 {
@@ -98,7 +98,7 @@ public class LineSegmentLineSegmentIntersection
 	public static List<Pt> getCommonEndpoints(Pt p1, Pt p2, Pt p3, Pt p4)
 	{
 
-		List<Pt> points = new ArrayList<>();
+		Vector<Pt> points = new Vector<>();
 
 		if (p1.equals(p3))
 		{

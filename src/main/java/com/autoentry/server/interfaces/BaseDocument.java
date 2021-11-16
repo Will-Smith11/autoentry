@@ -84,4 +84,6 @@ public interface BaseDocument
 
 	Single<List<HashMap<Label, DetectedDocumentData>>> getBetaResults();
 
+	String getDocUploadName();
+
 }
