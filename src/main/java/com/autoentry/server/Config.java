@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 
 import com.autoentry.server.beans.Document;
 
@@ -19,6 +20,7 @@ public class Config
 	final static String downloadBucketName = "temp-download-test";
 
 	@Bean
+	@Scope("singleton")
 	public Document document()
 	{
 		return multiPageDoc();

@@ -21,10 +21,10 @@ import com.autoentry.server.entities.Label;
 import com.autoentry.server.entities.Line;
 import com.autoentry.server.entities.RelatedBoundingBox;
 import com.autoentry.server.interfaces.BaseDocument;
-import com.autoentry.server.service.BoundingBoxGenService;
 import com.autoentry.server.service.DocumentOcrService;
 import com.autoentry.server.service.PdfParserService;
 import com.autoentry.server.service.RelatedBoundingBoxGenService;
+import com.autoentry.server.service.impl.BoundingBoxGenImpl;
 import com.autoentry.server.util.PdfTransferUtil;
 import com.google.cloud.vision.v1.Block;
 import com.google.cloud.vision.v1.Paragraph;
@@ -33,6 +33,7 @@ import com.google.cloud.vision.v1.Word;
 
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 @Component
 public class BoundingBoxDocument implements BaseDocument
@@ -46,8 +47,8 @@ public class BoundingBoxDocument implements BaseDocument
 	@Autowired
 	DocumentOcrService ocr;
 
-	@Autowired
-	BoundingBoxGenService bbg;
+	//	@Autowired
+	//	BoundingBoxGenService bbg;
 
 	@Autowired
 	RelatedBoundingBoxGenService genRelation;
@@ -130,6 +131,18 @@ public class BoundingBoxDocument implements BaseDocument
 		}).collect(Collectors.toList());
 	}
 
+	private DPage fixLinesPage(List<Line> l, DPage page)
+	{
+		final int h = page.getPageHeight();
+		List<Line> b = l.stream().map(v -> {
+			v.a.y = h - v.a.y;
+			v.b.y = h - v.b.y;
+			return v;
+		}).collect(Collectors.toList());
+		page.setLines(b);
+		return page;
+	}
+
 	@Override
 	public Single<HashMap<Label, DetectedDocumentData>> getResults()
 	{
@@ -164,10 +177,25 @@ public class BoundingBoxDocument implements BaseDocument
 			PDDocument d = PdfTransferUtil.getDoc(doc.getProjectId(), doc.getUploadBucketName(), doc.getDocUploadName());
 			parser.run(d).blockingSubscribe();
 			d.close();
+
 			for (DPage page : doc.getPages())
 			{
-				page.setBoundingBoxes(bbg.getBoundingBoxes(fixLines(page.getLines(), page), doc.getEPS()));
+				Completable.fromAction(() -> {
+					//					page.setBoundingBoxes(bbg.getBoundingBoxes(fixLines(page.getLines(), page), doc.getEPS()));
+					BoundingBoxGenImpl bbg = new BoundingBoxGenImpl();
+					bbg.getBoundingBoxesConcurrent(fixLinesPage(page.getLines(), page), doc.getEPS());
+
+				}).subscribeOn(Schedulers.io()).subscribe();
+				//				page.setBoundingBoxes(bbg.getBoundingBoxes(fixLines(page.getLines(), page), doc.getEPS()));
 			}
+
+			//			for (DPage page : doc.getPages())
+			//			{
+			//				Completable.fromAction(() -> {
+			//					page.setBoundingBoxes(bbg.getBoundingBoxes(fixLines(page.getLines(), page), doc.getEPS()));
+			//				}).subscribeOn(Schedulers.computation()).subscribe();
+			//				//				page.setBoundingBoxes(bbg.getBoundingBoxes(fixLines(page.getLines(), page), doc.getEPS()));
+			//			}
 			//			this.boundingBoxes = bbg.getBoundingBoxes(fixLines(l), doc.getEPS());
 			ocr.run().blockingAwait();
 		});

@@ -8,24 +8,19 @@ import java.util.Stack;
 import java.util.function.Function;
 
 import org.opencv.core.Point;
-import org.springframework.stereotype.Component;
 
 import com.autoentry.server.entities.BoundingBox;
+import com.autoentry.server.entities.DPage;
 import com.autoentry.server.entities.Line;
 import com.autoentry.server.entities.RelitivePoint;
 import com.autoentry.server.service.BoundingBoxGenService;
 import com.autoentry.server.util.LineSegmentLineSegmentIntersection;
 import com.autoentry.server.util.LineSegmentLineSegmentIntersection.Pt;
 
-import io.reactivex.rxjava3.core.Completable;
-
-@Component
 public class BoundingBoxGenImpl implements BoundingBoxGenService
 {
-	private double variance;
+	private double variance = 3;
 	private List<RelitivePoint> allPoints = new ArrayList<>();
-	private List<RelitivePoint> copy;
-	public List<Line> lines = new ArrayList<>();
 	private List<BoundingBox> boxes = new ArrayList<>();
 	private List<Function<RelitivePoint, RelitivePoint>> rdlu = new ArrayList<>();
 	private List<Function<RelitivePoint, RelitivePoint>> dlur = new ArrayList<>();
@@ -33,27 +28,66 @@ public class BoundingBoxGenImpl implements BoundingBoxGenService
 	private List<Function<RelitivePoint, RelitivePoint>> urdl = new ArrayList<>();
 
 	@Override
+	public void getBoundingBoxesConcurrent(DPage page, double ePS)
+	{
+		preLineBuilderConcurent(page, ePS);
+		page.setBoundingBoxes(getBoxes());
+	}
+
+	@Override
 	public List<BoundingBox> getBoundingBoxes(List<Line> lines, double ePs)
 	{
-		preLineBuild(lines, ePs).subscribe();
+		preLineBuild(lines, ePs);
 		return getBoxes();
 	}
 
-	private Completable preLineBuild(List<Line> li, double ePS)
+	private void preLineBuilderConcurent(DPage page, double ePS)
 	{
-		return Completable.fromAction(() -> {
-			this.variance = ePS;
-			buildSearchFuncitons();
-			for (Line l : li)
-			{
-				allPoints.add(l.getA());
-				allPoints.add(l.getB());
-				lines.add(l);
-			}
-			genIntersectionPoints();
-			copy = new ArrayList<>(allPoints);
-			genBoxesV2();
-		});
+		//		List<Line> lines = new ArrayList<>();
+		//		List<RelitivePoint> allPoints = new ArrayList<>();
+		this.variance = ePS;
+
+		for (Line l : page.getLines())
+		{
+			page.addPoint(l.getA());
+			page.addPoint(l.getB());
+
+			//			allPoints.add(l.getA());
+			//			allPoints.add(l.getB());
+			//			lines.add(l);
+		}
+		System.out.println("All points length before counting intersections: " + page.getPoints().size());
+		if (page.getPoints().isEmpty())
+		{
+			return;
+		}
+		genIntersectionPoints(page.getLines(), page.getPoints());
+		buildSearchFuncitons();
+		this.allPoints = page.getPoints();
+		genBoxesV2();
+	}
+
+	private void preLineBuild(List<Line> li, double ePS)
+	{
+		List<Line> lines = new ArrayList<>();
+		List<RelitivePoint> allPoints = new ArrayList<>();
+		this.variance = ePS;
+
+		for (Line l : li)
+		{
+			allPoints.add(l.getA());
+			allPoints.add(l.getB());
+			lines.add(l);
+		}
+		System.out.println("All points length before counting intersections: " + allPoints.size());
+		if (allPoints.isEmpty())
+		{
+			return;
+		}
+		genIntersectionPoints(lines, allPoints);
+
+		buildSearchFuncitons();
+		genBoxesV2();
 	}
 
 	private void buildSearchFuncitons()
@@ -76,17 +110,12 @@ public class BoundingBoxGenImpl implements BoundingBoxGenService
 		urdl.add(this::lu);
 	}
 
-	private List<RelitivePoint> getAllPoints()
-	{
-		return copy;
-	}
-
 	private List<BoundingBox> getBoxes()
 	{
 		return boxes;
 	}
 
-	private void genIntersectionPoints()
+	private void genIntersectionPoints(List<Line> lines, List<RelitivePoint> allPoints)
 	{
 		for (Line l1 : lines)
 		{
@@ -128,16 +157,16 @@ public class BoundingBoxGenImpl implements BoundingBoxGenService
 
 			RelitivePoint start = allPoints.get(0);
 			allPoints.remove(0);
-			if (buildFromPoint(start, rdlu))
+			if (buildFromPoint(start, rdlu, allPoints))
 			{
 			}
-			else if (buildFromPoint(start, dlur))
+			else if (buildFromPoint(start, dlur, allPoints))
 			{
 			}
-			else if (buildFromPoint(start, lurd))
+			else if (buildFromPoint(start, lurd, allPoints))
 			{
 			}
-			else if (buildFromPoint(start, urdl))
+			else if (buildFromPoint(start, urdl, allPoints))
 			{
 			}
 		}
@@ -160,7 +189,7 @@ public class BoundingBoxGenImpl implements BoundingBoxGenService
 		return result;
 	}
 
-	private boolean buildFromPoint(RelitivePoint p, List<Function<RelitivePoint, RelitivePoint>> functionList)
+	private boolean buildFromPoint(RelitivePoint p, List<Function<RelitivePoint, RelitivePoint>> functionList, List<RelitivePoint> allPoints)
 	{
 		Stack<RelitivePoint> pointStack = new Stack<>();
 		pointStack.push(p);
@@ -211,7 +240,7 @@ public class BoundingBoxGenImpl implements BoundingBoxGenService
 		{
 			if (validateStack(pointStack.toArray(new RelitivePoint[pointStack.size()])))
 			{
-				buildBoundBox(pointStack.toArray(new RelitivePoint[pointStack.size()]));
+				buildBoundBox(pointStack.toArray(new RelitivePoint[pointStack.size()]), allPoints);
 				return true;
 			}
 		}
@@ -325,7 +354,7 @@ public class BoundingBoxGenImpl implements BoundingBoxGenService
 		}
 	}
 
-	private void buildBoundBox(RelitivePoint[] points) // TODO add check for same box
+	private void buildBoundBox(RelitivePoint[] points, List<RelitivePoint> allPoints) // TODO add check for same box
 	{
 		//		for (int i = 0; i < points.length; i++)
 		//		{
