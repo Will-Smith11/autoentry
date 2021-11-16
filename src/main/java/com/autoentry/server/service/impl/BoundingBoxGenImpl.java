@@ -247,7 +247,15 @@ public class BoundingBoxGenImpl implements BoundingBoxGenService
 		return false;
 	}
 
-	private RelitivePoint rd(RelitivePoint p) // returns right point that has an avaible down point
+	private BoundingBox buildBoundBox(RelitivePoint[] points, List<RelitivePoint> allPoints) // TODO add check for same box
+	{
+		allPoints.remove(points[0]);
+		BoundingBox b = new BoundingBox();
+		b.setPoints(points);
+		return b;
+	}
+
+	private RelitivePoint rd(RelitivePoint p)
 	{
 		if (p == null)
 		{
@@ -352,23 +360,6 @@ public class BoundingBoxGenImpl implements BoundingBoxGenService
 		{
 			return null;
 		}
-	}
-
-	private void buildBoundBox(RelitivePoint[] points, List<RelitivePoint> allPoints) // TODO add check for same box
-	{
-		//		for (int i = 0; i < points.length; i++)
-		//		{
-		//			RelitivePoint p = points[i];
-		//			allPoints.remove(p);
-		//		}
-		allPoints.remove(points[0]);
-		BoundingBox b = new BoundingBox();
-		b.setPoints(points);
-		//		b.pointVals = points;
-		//		if (!boxes.contains(b))
-		//		{
-		boxes.add(b);
-		//		}
 	}
 
 	private boolean validateStack(RelitivePoint[] points) //TODO test fix

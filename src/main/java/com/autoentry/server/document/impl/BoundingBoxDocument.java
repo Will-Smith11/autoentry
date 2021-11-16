@@ -3,6 +3,7 @@ package com.autoentry.server.document.impl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Vector;
 import java.util.stream.Collectors;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -21,6 +22,7 @@ import com.autoentry.server.entities.Label;
 import com.autoentry.server.entities.Line;
 import com.autoentry.server.entities.RelatedBoundingBox;
 import com.autoentry.server.interfaces.BaseDocument;
+import com.autoentry.server.service.ConcurrentBoundingBoxGenService;
 import com.autoentry.server.service.DocumentOcrService;
 import com.autoentry.server.service.PdfParserService;
 import com.autoentry.server.service.RelatedBoundingBoxGenService;
@@ -162,13 +164,36 @@ public class BoundingBoxDocument implements BaseDocument
 	{
 		try
 		{
-			return genMeta().andThen(processMetaV2().map(v -> v.stream().map(p -> p.getPageResults()).collect(Collectors.toList())));
+			//			return genMeta().andThen(processMetaV2().map(v -> v.stream().map(p -> p.getPageResults()).collect(Collectors.toList())));
+			return genConcurentMeta().andThen(processMetaV2().map(v -> v.stream().map(p -> p.getPageResults()).collect(Collectors.toList())));
+
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	@Autowired
+	ConcurrentBoundingBoxGenService concurentBoundingBoxGen;
+
+	public Completable genConcurentMeta() throws Exception
+	{
+		return Completable.fromAction(() -> {
+			PDDocument d = PdfTransferUtil.getDoc(doc.getProjectId(), doc.getUploadBucketName(), doc.getDocUploadName());
+			parser.run(d).blockingSubscribe();
+			d.close();
+
+			for (DPage page : doc.getPages())
+			{
+				concurentBoundingBoxGen.getPageBoundingBox(new Vector<>(fixLines(page.getLines(), page)))
+						.map(v -> new ArrayList<>(v))
+						.subscribeOn(Schedulers.io())
+						.subscribe(b -> page.setBoundingBoxes(b));
+			}
+		}).andThen(ocr.run());
+
 	}
 
 	public Completable genMeta() throws Exception
