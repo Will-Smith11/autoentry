@@ -5,7 +5,11 @@ import java.util.List;
 
 import com.autoentry.server.entities.BoundingBox;
 import com.autoentry.server.entities.DPage;
+import com.autoentry.server.entities.DetectedBlock;
 import com.autoentry.server.entities.DetectedDocumentData;
+import com.autoentry.server.entities.DetectedParagraph;
+import com.autoentry.server.entities.DetectedSymbol;
+import com.autoentry.server.entities.DetectedWord;
 import com.autoentry.server.entities.Label;
 import com.google.cloud.vision.v1.Block;
 import com.google.cloud.vision.v1.Paragraph;
@@ -44,7 +48,13 @@ public interface BaseDocument
 
 	float getHeightDiv();
 
+	float getPageWidth(Integer pgNum);
+
+	float getPageHeight(Integer pgNum);
+
 	List<BoundingBox> getBoundingBoxes();
+
+	List<BoundingBox> getDPageBoundingBoxes(Integer pgNum);
 
 	List<Block> getBlocks();
 
@@ -53,6 +63,14 @@ public interface BaseDocument
 	List<Word> getWords();
 
 	List<Symbol> getSmybols();
+
+	List<DetectedBlock> getDBlocks(Integer pgNum);
+
+	List<DetectedParagraph> GetDParagraphs(Integer pgNum);
+
+	List<DetectedWord> getDWords(Integer pgNum);
+
+	List<DetectedSymbol> getDSymbols(Integer pgNum);
 
 	void setBlocks(List<Block> block);
 
@@ -63,5 +81,7 @@ public interface BaseDocument
 	void setSymbols(List<Symbol> symbols);
 
 	void addPage(DPage page);
+
+	Single<List<HashMap<Label, DetectedDocumentData>>> getBetaResults();
 
 }

@@ -2,19 +2,26 @@ package com.autoentry.server.entities;
 
 import java.util.List;
 
+import com.google.cloud.vision.v1.BoundingPoly;
+
 public class DetectedBlock
 {
 	private BoundingBox blockBoundingBox;
-	private String data;
 	private List<DetectedParagraph> detectedParagraphList;
 	private int pageNum;
+	private BoundingPoly boundingPoly;
 
-	public DetectedBlock(BoundingBox blockBB, String data, List<DetectedParagraph> detectedParaList, int pageNum)
+	public DetectedBlock(List<DetectedParagraph> detectedParaList, int pageNum, BoundingPoly boundingPoly)
 	{
-		this.blockBoundingBox = blockBB;
-		this.data = data;
+		//		this.blockBoundingBox = blockBB;
 		this.detectedParagraphList = detectedParaList;
 		this.pageNum = pageNum;
+		this.boundingPoly = boundingPoly;
+	}
+
+	public BoundingPoly getBoundingPoly()
+	{
+		return boundingPoly;
 	}
 
 	public int getPageNum()
@@ -32,16 +39,6 @@ public class DetectedBlock
 		this.blockBoundingBox = blockBoundingBox;
 	}
 
-	public String getData()
-	{
-		return data;
-	}
-
-	public void setData(String data)
-	{
-		this.data = data;
-	}
-
 	public List<DetectedParagraph> getDetectedParagraphList()
 	{
 		return detectedParagraphList;
@@ -49,7 +46,7 @@ public class DetectedBlock
 
 	public void setDetectedParagraphList(List<DetectedParagraph> detectedParagraphList)
 	{
+
 		this.detectedParagraphList = detectedParagraphList;
 	}
-
 }

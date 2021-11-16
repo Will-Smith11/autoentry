@@ -1,24 +1,21 @@
 package com.autoentry.server.entities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
-import com.google.cloud.vision.v1.Block;
-import com.google.cloud.vision.v1.Paragraph;
-import com.google.cloud.vision.v1.Symbol;
-import com.google.cloud.vision.v1.Word;
 
 public class DPage
 {
 	private int pageNum;
 	private int pageHeight;
 	private int pageWidth;
-	private List<Block> blocks = new ArrayList<>();
-	private List<Paragraph> paragraphs = new ArrayList<>();
-	private List<Word> words = new ArrayList<>();
-	private List<Symbol> smybols = new ArrayList<>();
+	private List<DetectedBlock> blocks = new ArrayList<>();
+	private List<DetectedParagraph> paragraphs = new ArrayList<>();
+	private List<DetectedWord> words = new ArrayList<>();
+	private List<DetectedSymbol> smybols = new ArrayList<>();
 	private List<BoundingBox> boundingBoxes = new ArrayList<>();
 	private List<Line> lines = new ArrayList<>();
+	private HashMap<Label, DetectedDocumentData> pageResults = new HashMap<>();
 
 	public DPage(int pageNum, int pageHeight, int pageWidth)
 	{
@@ -57,42 +54,42 @@ public class DPage
 		this.pageWidth = pageWidth;
 	}
 
-	public List<Block> getBlocks()
+	public List<DetectedBlock> getBlocks()
 	{
 		return blocks;
 	}
 
-	public void setBlocks(List<Block> blocks)
+	public void setBlocks(List<DetectedBlock> blocks)
 	{
 		this.blocks = blocks;
 	}
 
-	public List<Paragraph> getParagraphs()
+	public List<DetectedParagraph> getParagraphs()
 	{
 		return paragraphs;
 	}
 
-	public void setParagraphs(List<Paragraph> paragraphs)
+	public void setParagraphs(List<DetectedParagraph> paragraphs)
 	{
 		this.paragraphs = paragraphs;
 	}
 
-	public List<Word> getWords()
+	public List<DetectedWord> getWords()
 	{
 		return words;
 	}
 
-	public void setWords(List<Word> words)
+	public void setWords(List<DetectedWord> words)
 	{
 		this.words = words;
 	}
 
-	public List<Symbol> getSmybols()
+	public List<DetectedSymbol> getSmybols()
 	{
 		return smybols;
 	}
 
-	public void setSmybols(List<Symbol> smybols)
+	public void setSmybols(List<DetectedSymbol> smybols)
 	{
 		this.smybols = smybols;
 	}
@@ -105,6 +102,26 @@ public class DPage
 	public void setBoundingBoxes(List<BoundingBox> boundingBoxes)
 	{
 		this.boundingBoxes = boundingBoxes;
+	}
+
+	public List<Line> getLines()
+	{
+		return lines;
+	}
+
+	public void setLines(List<Line> lines)
+	{
+		this.lines = lines;
+	}
+
+	public HashMap<Label, DetectedDocumentData> getPageResults()
+	{
+		return pageResults;
+	}
+
+	public void addResult(Label l, DetectedDocumentData d)
+	{
+		pageResults.put(l, d);
 	}
 
 	@Override
@@ -121,15 +138,5 @@ public class DPage
 			return this.pageNum == pgnum;
 		}
 		return false;
-	}
-
-	public List<Line> getLines()
-	{
-		return lines;
-	}
-
-	public void setLines(List<Line> lines)
-	{
-		this.lines = lines;
 	}
 }

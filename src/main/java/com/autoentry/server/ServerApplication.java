@@ -2,6 +2,7 @@ package com.autoentry.server;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -38,6 +39,12 @@ public class ServerApplication
 	public ResponseEntity<HashMap<Label, DetectedDocumentData>> document() throws IOException
 	{
 		return new ResponseEntity<>(bDoc.getResults().blockingGet(), HttpStatus.OK);
+	}
+
+	@GetMapping("/docv2")
+	public ResponseEntity<List<HashMap<Label, DetectedDocumentData>>> documentBeta() throws IOException
+	{
+		return new ResponseEntity<>(bDoc.getBetaResults().blockingGet(), HttpStatus.OK);
 	}
 
 }

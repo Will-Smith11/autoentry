@@ -2,19 +2,22 @@ package com.autoentry.server.entities;
 
 import java.util.List;
 
+import com.google.cloud.vision.v1.BoundingPoly;
+
 public class DetectedWord
 {
 	private Integer pageNum;
 	private BoundingBox WordBoundingBox;
-	private String wordData;
 	private List<DetectedSymbol> detectedSmybolList;
+	private BoundingPoly boundingPoly;
 
-	public DetectedWord(Integer pageNum, BoundingBox wordBoundingBox, String wordData, List<DetectedSymbol> detectedSmybolList)
+	public DetectedWord(Integer pageNum, List<DetectedSymbol> detectedSmybolList, BoundingPoly boundingPoly)
 	{
 		this.pageNum = pageNum;
-		WordBoundingBox = wordBoundingBox;
-		this.wordData = wordData;
+		//		WordBoundingBox = wordBoundingBox;
+
 		this.detectedSmybolList = detectedSmybolList;
+		this.boundingPoly = boundingPoly;
 	}
 
 	public Integer getPageNum()
@@ -32,14 +35,9 @@ public class DetectedWord
 		WordBoundingBox = wordBoundingBox;
 	}
 
-	public String getWordData()
+	public BoundingPoly getBoundingPoly()
 	{
-		return wordData;
-	}
-
-	public void setWordData(String wordData)
-	{
-		this.wordData = wordData;
+		return this.boundingPoly;
 	}
 
 	public List<DetectedSymbol> getDetectedSmybolList()

@@ -1,15 +1,19 @@
 package com.autoentry.server.entities;
 
+import com.google.cloud.vision.v1.BoundingPoly;
+
 public class DetectedSymbol
 {
 	private Integer pageNum;
 	private BoundingBox symbolBoundingBox;
 	private String symbolData;
+	private BoundingPoly boundingPoly;
 
-	public DetectedSymbol(Integer pageNum, BoundingBox symbolBoundingBox, String symbolData)
+	public DetectedSymbol(Integer pageNum, BoundingPoly boundingPoly, String symbolData)
 	{
 		this.pageNum = pageNum;
-		this.setSymbolBoundingBox(symbolBoundingBox);
+		//		this.setSymbolBoundingBox(symbolBoundingBox);
+		this.boundingPoly = boundingPoly;
 		this.setSymbolData(symbolData);
 	}
 
@@ -36,5 +40,10 @@ public class DetectedSymbol
 	public Integer getPageNum()
 	{
 		return pageNum;
+	}
+
+	public BoundingPoly getBoundingPoly()
+	{
+		return boundingPoly;
 	}
 }

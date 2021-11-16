@@ -41,8 +41,6 @@ public class Document implements Serializable
 	public Document(String sourcePath, String resultPath, String projectId, String uploadBucketName, String gcsSrcPath, String gcsDestPath,
 			boolean isTemplateCopy, Integer height, Integer width, float heightDiv, float widthDiv)
 	{
-		super();
-
 		this.sourcePath = sourcePath;
 		this.resultPath = resultPath;
 		this.projectId = projectId;
