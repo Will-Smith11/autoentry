@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.Stack;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiFunction;
 
 import org.opencv.core.Point;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,6 @@ import com.autoentry.server.util.LineSegmentLineSegmentIntersection;
 import com.autoentry.server.util.LineSegmentLineSegmentIntersection.Pt;
 
 import io.reactivex.rxjava3.core.Single;
-import io.reactivex.rxjava3.functions.BiFunction;
 
 /**
  * the purpose of this class is to re-write the previous boundingBoxGenService and to make it thread safe so we can run it concurrently
@@ -43,8 +43,9 @@ public class ConcurrentBoundingBoxGenImpl implements ConcurrentBoundingBoxGenSer
 				allPoints.add(l.getB());
 			}
 			allPoints = genIntersectionPoints(lines, allPoints);
-			source.onError(new Throwable("some error occured while building boundingboxes"));
-			source.onSuccess(genBoxes(allPoints, rdlu, dlur, lurd, urdl));
+			Vector<BoundingBox> result = genBoxes(allPoints, rdlu, dlur, lurd, urdl);
+			//			source.onError(new Throwable("some error occured while building boundingboxes"));
+			source.onSuccess(result);
 		});
 	}
 
@@ -89,7 +90,7 @@ public class ConcurrentBoundingBoxGenImpl implements ConcurrentBoundingBoxGenSer
 	}
 
 	private Vector<BoundingBox> genBoxes(Vector<RelitivePoint> allPoints, Vector<BiFunction<RelitivePoint, Vector<RelitivePoint>, RelitivePoint>> rdlu, Vector<BiFunction<RelitivePoint, Vector<RelitivePoint>, RelitivePoint>> dlur, Vector<BiFunction<RelitivePoint, Vector<RelitivePoint>, RelitivePoint>> lurd, Vector<BiFunction<RelitivePoint, Vector<RelitivePoint>, RelitivePoint>> urdl)
-			throws Throwable
+
 	{
 		Vector<BoundingBox> results = new Vector<>();
 		while (!allPoints.isEmpty())
@@ -144,7 +145,6 @@ public class ConcurrentBoundingBoxGenImpl implements ConcurrentBoundingBoxGenSer
 	}
 
 	private BoundingBox buildFromPoint(RelitivePoint p, Vector<BiFunction<RelitivePoint, Vector<RelitivePoint>, RelitivePoint>> functionList, Vector<RelitivePoint> allPoints)
-			throws Throwable
 	{
 		Stack<RelitivePoint> pointStack = new Stack<>();
 		pointStack.push(p);

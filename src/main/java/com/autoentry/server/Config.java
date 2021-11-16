@@ -11,7 +11,7 @@ import com.autoentry.server.beans.Document;
 @Configuration
 public class Config
 {
-	final static String sourcePathb = "/com.autoentry.server/src/main/resources/CD-00000067Docs202109101643.pdf";
+	final static String sourcePathb = "C:\\Users\\Will\\git\\com.autoentry.server\\examples\\CD-00000067Docs202109101643.pdf";
 	final static String sourcePathc = "C:\\Users\\Will\\git\\com.autoentry\\examples\\AL-00004546Docs202104301027.pdf";
 
 	final static String resultPathb = "C:\\Users\\Will\\git\\com.autoentry\\results\\";
@@ -28,7 +28,8 @@ public class Config
 
 	private Document multiPageDoc()
 	{
-		Document d = new Document(sourcePathc, resultPathb, projectIdb, uploadBucketNameb, "gs://temp-upload-test/test",
+		Document d = new Document(sourcePathc, resultPathb, projectIdb, uploadBucketNameb,
+				"gs://temp-upload-test/" + sourcePathc.substring(sourcePathc.lastIndexOf("\\") + 1),
 				"gs://temp-download-test/test/multipg", true);
 		d.setDocUploadName(sourcePathc.substring(sourcePathc.lastIndexOf("\\") + 1));
 		System.out.println(d.getDocUploadName());
@@ -43,9 +44,10 @@ public class Config
 
 	private Document singlePageDoc()
 	{
-		Document d = new Document(sourcePathb, resultPathb, projectIdb, uploadBucketNameb, "gs://temp-upload-test/test",
-				"gs://temp-download-test/test", true);
-		d.setDocUploadName(sourcePathb.substring(sourcePathb.lastIndexOf("/") + 1));
+		Document d = new Document(sourcePathb, resultPathb, projectIdb, uploadBucketNameb,
+				"gs://temp-upload-test/" + sourcePathb.substring(sourcePathb.lastIndexOf("\\") + 1),
+				"gs://temp-download-test/singlepg/test", true);
+		d.setDocUploadName(sourcePathb.substring(sourcePathb.lastIndexOf("\\") + 1));
 		d.setLabels(Arrays.asList("Destination:", "Origin Station:", "Container:", "Master Loader:", "Air/Port of Loading:", "Pier/Terminal:",
 				"Ocean B\\L - MAWB no:", "E.T.Arriv.:", "Air/Port of DIScharge:", "Vessel/Airline:", "Master HOBL:", "Departure Date:"));
 		return d;

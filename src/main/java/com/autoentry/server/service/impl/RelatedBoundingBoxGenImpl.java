@@ -64,6 +64,7 @@ public class RelatedBoundingBoxGenImpl implements RelatedBoundingBoxGenService
 			{
 				if (containsV2(p.getBoundingPoly(), b))
 				{
+					p.setBlockBoundingBox(b);
 					RelatedBoundingBox<DetectedBlock> test = new RelatedBoundingBox<>(b, p);
 					if (blockBox.contains(test))
 					{
@@ -89,6 +90,7 @@ public class RelatedBoundingBoxGenImpl implements RelatedBoundingBoxGenService
 			{
 				if (containsV2(p.getBoundingPoly(), b))
 				{
+					p.setParagraphBoundingBox(b);
 					RelatedBoundingBox<DetectedParagraph> test = new RelatedBoundingBox<>(b, p);
 					if (paraBox.contains(test))
 					{
@@ -114,6 +116,7 @@ public class RelatedBoundingBoxGenImpl implements RelatedBoundingBoxGenService
 			{
 				if (containsV2(p.getBoundingPoly(), b))
 				{
+					p.setWordBoundingBox(b);
 					RelatedBoundingBox<DetectedWord> test = new RelatedBoundingBox<>(b, p);
 					if (wordBox.contains(test))
 					{
@@ -139,6 +142,7 @@ public class RelatedBoundingBoxGenImpl implements RelatedBoundingBoxGenService
 			{
 				if (containsV2(p.getBoundingPoly(), b))
 				{
+					p.setSymbolBoundingBox(b);
 					RelatedBoundingBox<DetectedSymbol> test = new RelatedBoundingBox<>(b, p);
 					if (symbolBox.contains(test))
 					{

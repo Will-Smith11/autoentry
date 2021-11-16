@@ -189,7 +189,7 @@ public class BoundingBoxDocument implements BaseDocument
 			{
 				concurentBoundingBoxGen.getPageBoundingBox(new Vector<>(fixLines(page.getLines(), page)))
 						.map(v -> new ArrayList<>(v))
-						.subscribeOn(Schedulers.io())
+						.subscribeOn(Schedulers.computation())
 						.subscribe(b -> page.setBoundingBoxes(b));
 			}
 		}).andThen(ocr.run());
@@ -314,7 +314,8 @@ public class BoundingBoxDocument implements BaseDocument
 					}
 					if (!isLabel)
 					{
-						DetectedDocumentData d = new DetectedDocumentData(b.getBoundingBox(), pageText);
+						DetectedDocumentData d = new DetectedDocumentData(b.getBoundingBox(), pageText, page.getPageNum());
+
 						if (!dataFound.contains(d))
 						{
 							dataFound.add(d);
@@ -588,5 +589,11 @@ public class BoundingBoxDocument implements BaseDocument
 	public List<BoundingBox> getDPageBoundingBoxes(Integer pgNum)
 	{
 		return doc.getPage(pgNum).getBoundingBoxes();
+	}
+
+	@Override
+	public String getDocUploadName()
+	{
+		return doc.getDocUploadName();
 	}
 }
