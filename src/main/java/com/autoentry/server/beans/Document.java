@@ -25,6 +25,7 @@ public class Document implements Serializable
 	private List<String> labels;
 	private List<DPage> pages = new ArrayList<>();
 	private Integer pageAmount = 0;
+	private String docUploadName;
 
 	public Document(String srcPath, String outPath, String projectId, String uploadBucketName, String gcsSrcPath, String gcsDestPath,
 			boolean isTemplate)
@@ -323,5 +324,15 @@ public class Document implements Serializable
 	public void setPageAmount(Integer pageAmount)
 	{
 		this.pageAmount = pageAmount;
+	}
+
+	public String getDocUploadName()
+	{
+		return docUploadName;
+	}
+
+	public void setDocUploadName(String docUploadName)
+	{
+		this.docUploadName = docUploadName;
 	}
 }

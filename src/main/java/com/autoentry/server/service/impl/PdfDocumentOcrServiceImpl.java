@@ -20,6 +20,7 @@ import com.autoentry.server.entities.DetectedWord;
 import com.autoentry.server.interfaces.BaseDocument;
 import com.autoentry.server.service.DocumentOcrService;
 import com.autoentry.server.util.ConnectionUtil;
+import com.autoentry.server.util.PdfTransferUtil;
 import com.google.api.gax.longrunning.OperationFuture;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Bucket;
@@ -66,7 +67,7 @@ public class PdfDocumentOcrServiceImpl implements DocumentOcrService
 	public void runOcr() throws Exception
 	{
 		ConnectionUtil.authImplicit();
-		//		PdfTransferUtil.uploadObject(doc.getProjectId(), doc.getUploadBucketName(), "test", doc.getSourcePath());
+		PdfTransferUtil.uploadObject(doc.getProjectId(), doc.getUploadBucketName(), "test", doc.getSourcePath());
 
 		try (ImageAnnotatorClient client = ImageAnnotatorClient.create())
 		{
@@ -165,10 +166,11 @@ public class PdfDocumentOcrServiceImpl implements DocumentOcrService
 										pgNum.get(), b.getBoundingBox()))
 								.collect(Collectors.toList()));
 					}
-					pgNum.getAndUpdate(v -> v++);
+
 				}
 
 			}
+			pgNum.getAndUpdate(v -> v++);
 		}
 		else
 		{

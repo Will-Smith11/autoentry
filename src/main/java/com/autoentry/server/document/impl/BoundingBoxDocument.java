@@ -161,7 +161,7 @@ public class BoundingBoxDocument implements BaseDocument
 	public Completable genMeta() throws Exception
 	{
 		return Completable.fromAction(() -> {
-			PDDocument d = PdfTransferUtil.getDoc(doc.getProjectId(), doc.getUploadBucketName(), "test1");
+			PDDocument d = PdfTransferUtil.getDoc(doc.getProjectId(), doc.getUploadBucketName(), doc.getDocUploadName());
 			parser.run(d).blockingSubscribe();
 			d.close();
 			for (DPage page : doc.getPages())
